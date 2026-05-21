@@ -54,7 +54,7 @@ export const productSpecs = {
   tagline: 'HIGH-PERFORMANCE INDUSTRIAL ROBOTIC ARM',
   taglineZh: '高性能工业机械臂',
   /** Hero 产品大图 — 用户右键保存附图到 public/lvjin-so101-hero.png 即可启用 */
-  heroImage: '/lvjin-so101-hero.png',
+  heroImage: '/lvjin-so101-hero.jpeg',
   /** 多视图小图（可选，未提供时用 CSS 占位） */
   views: [
     { label: '正视图', en: 'Front View', src: '/lvjin-so101-view-front.png' },

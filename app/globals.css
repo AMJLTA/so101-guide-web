@@ -1,0 +1,632 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(0.99 0.005 270);
+  --foreground: oklch(0.18 0.02 270);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.02 270);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.02 270);
+  --primary: oklch(0.55 0.22 265);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.96 0.008 270);
+  --secondary-foreground: oklch(0.25 0.02 270);
+  --muted: oklch(0.96 0.008 270);
+  --muted-foreground: oklch(0.5 0.015 270);
+  --accent: oklch(0.55 0.22 295);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.6 0.245 25);
+  --destructive-foreground: oklch(1 0 0);
+  --success: oklch(0.62 0.18 145);
+  --success-foreground: oklch(1 0 0);
+  --warning: oklch(0.72 0.17 75);
+  --warning-foreground: oklch(0.18 0.02 75);
+  --border: oklch(0.92 0.01 270);
+  --input: oklch(0.94 0.008 270);
+  --ring: oklch(0.55 0.22 265);
+  --chart-1: oklch(0.55 0.22 265);
+  --chart-2: oklch(0.55 0.22 295);
+  --chart-3: oklch(0.6 0.15 200);
+  --chart-4: oklch(0.7 0.15 180);
+  --chart-5: oklch(0.75 0.12 140);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.98 0.005 270);
+  --sidebar-foreground: oklch(0.18 0.02 270);
+  --sidebar-primary: oklch(0.55 0.22 265);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.94 0.008 270);
+  --sidebar-accent-foreground: oklch(0.25 0.02 270);
+  --sidebar-border: oklch(0.92 0.01 270);
+  --sidebar-ring: oklch(0.55 0.22 265);
+}
+
+.dark {
+  --background: oklch(0.13 0.012 270);
+  --foreground: oklch(0.96 0 0);
+  --card: oklch(0.17 0.017 270);
+  --card-foreground: oklch(0.96 0 0);
+  --popover: oklch(0.18 0.018 270);
+  --popover-foreground: oklch(0.96 0 0);
+  --primary: oklch(0.68 0.21 265);
+  --primary-foreground: oklch(0.08 0.01 270);
+  --secondary: oklch(0.25 0.022 270);
+  --secondary-foreground: oklch(0.96 0 0);
+  --muted: oklch(0.22 0.017 270);
+  --muted-foreground: oklch(0.68 0.01 270);
+  --accent: oklch(0.62 0.23 295);
+  --accent-foreground: oklch(0.08 0.01 270);
+  --destructive: oklch(0.65 0.24 25);
+  --destructive-foreground: oklch(1 0 0);
+  --success: oklch(0.72 0.18 145);
+  --success-foreground: oklch(0.08 0.01 145);
+  --warning: oklch(0.8 0.17 75);
+  --warning-foreground: oklch(0.18 0.02 75);
+  --border: oklch(0.28 0.022 270);
+  --input: oklch(0.22 0.017 270);
+  --ring: oklch(0.68 0.21 265);
+  --chart-1: oklch(0.68 0.21 265);
+  --chart-2: oklch(0.62 0.23 295);
+  --chart-3: oklch(0.62 0.16 200);
+  --chart-4: oklch(0.72 0.15 180);
+  --chart-5: oklch(0.77 0.12 140);
+  --sidebar: oklch(0.15 0.012 270);
+  --sidebar-foreground: oklch(0.96 0 0);
+  --sidebar-primary: oklch(0.68 0.21 265);
+  --sidebar-primary-foreground: oklch(0.08 0.01 270);
+  --sidebar-accent: oklch(0.25 0.022 270);
+  --sidebar-accent-foreground: oklch(0.96 0 0);
+  --sidebar-border: oklch(0.28 0.022 270);
+  --sidebar-ring: oklch(0.68 0.21 265);
+}
+
+@theme inline {
+  --font-sans: 'Geist', 'Geist Fallback', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', ui-monospace, monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
+  }
+
+  ::selection {
+    background: oklch(from var(--primary) l c h / 0.3);
+    color: var(--foreground);
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+  border: 2px solid var(--background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+.gradient-border {
+  position: relative;
+  background: linear-gradient(var(--card), var(--card)) padding-box,
+    linear-gradient(135deg, var(--primary), var(--accent)) border-box;
+  border: 1px solid transparent;
+}
+
+/* Glow effects */
+.glow-primary {
+  box-shadow: 0 0 24px oklch(from var(--primary) l c h / 0.35);
+}
+
+.glow-accent {
+  box-shadow: 0 0 24px oklch(from var(--accent) l c h / 0.35);
+}
+
+.glow-primary-hover:hover {
+  box-shadow: 0 0 28px oklch(from var(--primary) l c h / 0.45);
+}
+
+/* Animated mesh background */
+.mesh-bg {
+  background-image:
+    radial-gradient(at 12% 12%, oklch(from var(--primary) l c h / 0.18) 0px, transparent 50%),
+    radial-gradient(at 88% 24%, oklch(from var(--accent) l c h / 0.16) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, oklch(from var(--primary) l c h / 0.12) 0px, transparent 50%);
+}
+
+.mesh-bg-soft {
+  background-image:
+    radial-gradient(at 12% 12%, oklch(from var(--primary) l c h / 0.08) 0px, transparent 50%),
+    radial-gradient(at 88% 24%, oklch(from var(--accent) l c h / 0.08) 0px, transparent 50%);
+}
+
+/* Grid backdrop */
+.grid-bg {
+  background-image:
+    linear-gradient(to right, oklch(from var(--border) l c h / 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(from var(--border) l c h / 0.4) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent);
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0) }
+  50% { transform: translateY(-8px) }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Slow pulse */
+@keyframes slow-pulse {
+  0%, 100% { opacity: 0.6 }
+  50% { opacity: 1 }
+}
+
+.animate-slow-pulse {
+  animation: slow-pulse 4s ease-in-out infinite;
+}
+
+/* Shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0 }
+  100% { background-position: 200% 0 }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    oklch(from var(--primary) l c h / 0.15),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+}
+
+/* Reveal on scroll */
+@keyframes fade-up {
+  0% { opacity: 0; transform: translateY(12px) }
+  100% { opacity: 1; transform: translateY(0) }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out backwards;
+}
+
+/* Reading progress bar */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  z-index: 60;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 12px oklch(from var(--primary) l c h / 0.6);
+}
+
+/* Code block */
+.code-block {
+  background: oklch(from var(--card) calc(l - 0.02) c h);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  font-family: var(--font-mono);
+}
+
+/* Terminal style */
+.terminal {
+  background: oklch(0.12 0.01 270);
+  color: oklch(0.92 0 0);
+  font-family: var(--font-mono);
+  border-radius: 0.75rem;
+  border: 1px solid oklch(0.25 0.02 270);
+}
+
+.terminal-header {
+  background: oklch(0.18 0.015 270);
+  border-bottom: 1px solid oklch(0.25 0.02 270);
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+/* Prose tweaks for chat bubble */
+.chat-prose p { margin: 0.25rem 0 }
+.chat-prose h4 { margin: 0.75rem 0 0.25rem; font-weight: 600 }
+.chat-prose ul, .chat-prose ol { margin: 0.25rem 0; padding-left: 1.25rem }
+.chat-prose li { margin: 0.125rem 0 }
+.chat-prose code:not(pre code) {
+  background: oklch(from var(--muted) l c h / 0.6);
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  font-size: 0.85em;
+}
+
+/* ============== Aurora background ============== */
+@keyframes aurora-shift {
+  0%, 100% { background-position: 0% 50%, 100% 50%, 50% 100% }
+  25% { background-position: 30% 30%, 70% 70%, 50% 0% }
+  50% { background-position: 100% 50%, 0% 50%, 50% 100% }
+  75% { background-position: 70% 70%, 30% 30%, 50% 0% }
+}
+
+.aurora {
+  background:
+    radial-gradient(40% 50% at 20% 30%, oklch(from var(--primary) l c h / 0.45) 0%, transparent 60%),
+    radial-gradient(35% 45% at 80% 20%, oklch(from var(--accent) l c h / 0.4) 0%, transparent 60%),
+    radial-gradient(45% 40% at 60% 80%, oklch(from var(--primary) l c h / 0.3) 0%, transparent 60%);
+  background-size: 200% 200%, 200% 200%, 200% 200%;
+  animation: aurora-shift 22s ease-in-out infinite;
+  filter: blur(50px) saturate(1.2);
+}
+
+/* ============== Conic rotating border ============== */
+@keyframes conic-spin {
+  to { --conic-angle: 360deg }
+}
+
+@property --conic-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.conic-border {
+  position: relative;
+  isolation: isolate;
+}
+
+.conic-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--conic-angle, 0deg),
+    transparent 0%,
+    oklch(from var(--primary) l c h / 0.8) 25%,
+    oklch(from var(--accent) l c h / 0.9) 50%,
+    transparent 75%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: conic-spin 6s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ============== Marquee ============== */
+@keyframes marquee {
+  from { transform: translateX(0) }
+  to { transform: translateX(-50%) }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--marquee-duration, 30s) linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* ============== Shimmer gradient text ============== */
+@keyframes shimmer-text-anim {
+  to { background-position: 200% center }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--primary) 0%,
+    var(--accent) 25%,
+    oklch(from var(--primary) calc(l + 0.15) c h) 50%,
+    var(--accent) 75%,
+    var(--primary) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-text-anim 4s linear infinite;
+}
+
+/* ============== Glow beam (divider) ============== */
+@keyframes glow-beam-anim {
+  0%, 100% { opacity: 0.3; transform: scaleX(0.8) }
+  50% { opacity: 1; transform: scaleX(1) }
+}
+
+.glow-beam {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    oklch(from var(--primary) l c h / 0.4) 25%,
+    oklch(from var(--accent) l c h / 0.8) 50%,
+    oklch(from var(--primary) l c h / 0.4) 75%,
+    transparent 100%
+  );
+  box-shadow: 0 0 12px oklch(from var(--primary) l c h / 0.6);
+  animation: glow-beam-anim 4s ease-in-out infinite;
+}
+
+/* ============== Reveal animations ============== */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-left { transform: translateX(-32px) }
+.reveal-left.reveal-in { transform: translateX(0) }
+.reveal-right { transform: translateX(32px) }
+.reveal-right.reveal-in { transform: translateX(0) }
+.reveal-scale { transform: scale(0.95) }
+.reveal-scale.reveal-in { transform: scale(1) }
+
+/* ============== Ripple on click ============== */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 999px;
+  background: oklch(from var(--primary-foreground) l c h / 0.4);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+/* 自定义光标已禁用 —— 使用系统光标 */
+
+/* ============== Spotlight card hover ============== */
+.spotlight-card {
+  --spot-x: 50%;
+  --spot-y: 50%;
+  position: relative;
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    400px circle at var(--spot-x) var(--spot-y),
+    oklch(from var(--primary) l c h / 0.18) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+/* ============== Tilt card ============== */
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}
+
+/* ============== Grid pattern with mask ============== */
+@keyframes grid-pulse {
+  0%, 100% { opacity: 0.4 }
+  50% { opacity: 0.7 }
+}
+
+.grid-pattern {
+  background-image:
+    linear-gradient(to right, oklch(from var(--border) l c h / 0.6) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(from var(--border) l c h / 0.6) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.grid-pattern.mask-radial {
+  mask-image: radial-gradient(ellipse 100% 70% at 50% 0%, black 30%, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 100% 70% at 50% 0%, black 30%, transparent);
+}
+
+/* ============== Word reveal stagger ============== */
+.word-reveal {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.word-reveal-inner {
+  display: inline-block;
+  transform: translateY(110%);
+  opacity: 0;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.word-reveal.in .word-reveal-inner {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ============== Glitch text ============== */
+@keyframes glitch-1 {
+  0%, 90%, 100% { transform: translate(0) }
+  20% { transform: translate(-2px, 2px) }
+  40% { transform: translate(-2px, -2px) }
+  60% { transform: translate(2px, 2px) }
+  80% { transform: translate(2px, -2px) }
+}
+
+@keyframes glitch-2 {
+  0%, 90%, 100% { transform: translate(0) }
+  20% { transform: translate(2px, -2px) }
+  40% { transform: translate(2px, 2px) }
+  60% { transform: translate(-2px, -2px) }
+  80% { transform: translate(-2px, 2px) }
+}
+
+.glitch:hover {
+  position: relative;
+}
+
+.glitch:hover::before,
+.glitch:hover::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: var(--background);
+  overflow: hidden;
+}
+
+.glitch:hover::before {
+  left: 2px;
+  text-shadow: -1px 0 var(--accent);
+  clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+  animation: glitch-1 0.6s infinite linear alternate-reverse;
+}
+
+.glitch:hover::after {
+  left: -2px;
+  text-shadow: -1px 0 var(--primary);
+  clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+  animation: glitch-2 0.6s infinite linear alternate-reverse;
+}
+
+/* ============== Floating dots particle effect ============== */
+@keyframes float-particle {
+  0% { transform: translate(0, 0); opacity: 0 }
+  10% { opacity: 1 }
+  90% { opacity: 1 }
+  100% { transform: translate(var(--tx, 100px), -100vh); opacity: 0 }
+}
+
+/* ============== Disco / breathing gradient on backgrounds ============== */
+@keyframes hue-rotate {
+  to { filter: hue-rotate(360deg) }
+}
+
+.hue-loop {
+  animation: hue-rotate 30s linear infinite;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+    scroll-behavior: auto !important;
+  }
+  .aurora,
+  .marquee-track,
+  .shimmer-text,
+  .glow-beam,
+  .hue-loop {
+    animation: none !important;
+  }
+}

@@ -57,10 +57,10 @@ export const productSpecs = {
   heroImage: '/lvjin-so101-hero.jpeg',
   /** 多视图小图（可选，未提供时用 CSS 占位） */
   views: [
-    { label: '正视图', en: 'Front View', src: '/lvjin-so101-view-front.png' },
+    { label: '正视图', en: 'Front View', src: '/lvjin-so101-view-front.jpeg' },
     { label: '侧视图', en: 'Side View', src: '/lvjin-so101-view-side.png' },
-    { label: '后视图', en: 'Rear View', src: '/lvjin-so101-view-rear.png' },
-    { label: '顶视图', en: 'Top View', src: '/lvjin-so101-view-top.png' }
+    { label: '后视图', en: 'Rear View', src: '/lvjin-so101-view-rear.jpeg' },
+    { label: '顶视图', en: 'Top View', src: '/lvjin-so101-view-top.jpeg' }
   ],
   kpis: [
     { label: '负载', en: 'Payload', value: '10', unit: 'kg' },

@@ -183,9 +183,9 @@ export default function HomePage() {
 
               <h1 className="mt-6 text-balance text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl">
                 <TextReveal
-                  text="SO101 模仿学习"
+                  text={`SO101\n模仿学习`}
                   as="span"
-                  className="block"
+                  className="block whitespace-pre-line"
                   staggerMs={80}
                 />
                 <span className="mt-2 block">

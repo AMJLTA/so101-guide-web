@@ -41,12 +41,12 @@ export function Header() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="group flex items-center gap-2.5">
-          <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary/15 to-accent/15 ring-1 ring-border/60 transition-transform group-hover:scale-105">
+          <div className="relative flex h-17 w-17 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary/15 to-accent/15 ring-1 ring-border/60 transition-transform group-hover:scale-105">
             <Image
               src="/lvjin-logo.png"
               alt={siteConfig.brand}
-              width={36}
-              height={36}
+              width={60}
+              height={60}
               className="h-full w-full object-contain p-1"
               priority
             />
@@ -90,14 +90,12 @@ export function Header() {
             variant="outline"
             size="sm"
             onClick={triggerCommandPalette}
-            className="hidden h-9 gap-2 px-2.5 text-xs text-muted-foreground sm:inline-flex"
+            className="hidden h-9 w-22 gap-2 px-2.5 text-xs text-muted-foreground sm:inline-flex"
             aria-label="搜索"
           >
             <Search className="h-3.5 w-3.5" />
             <span>搜索</span>
-            <kbd className="ml-2 rounded border border-border/70 bg-background px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-              ⌘K
-            </kbd>
+            
           </Button>
           <Button
             asChild
@@ -106,9 +104,7 @@ export function Header() {
             className="hidden md:inline-flex"
             aria-label="GitHub"
           >
-            <a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
-              <Github className="h-4 w-4" />
-            </a>
+          
           </Button>
           <ThemeToggle />
           <Button asChild size="sm" className="glow-primary hidden lg:inline-flex">

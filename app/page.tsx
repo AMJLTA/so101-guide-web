@@ -6,7 +6,7 @@ import {
   Brain,
   ChevronRight,
   Database,
-  Github,
+ 
   PlayCircle,
   Rocket,
   Terminal,
@@ -227,18 +227,7 @@ export default function HomePage() {
                         询问 AI 助手
                       </Link>
                     </Button>
-                  </Magnetic>
-                  <Magnetic strength={0.5} range={140}>
-                    <Button asChild variant="ghost" size="lg" className="h-12 text-muted-foreground">
-                      <a
-                        href={siteConfig.links.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Github className="mr-1.5 h-4 w-4" />
-                        GitHub
-                      </a>
-                    </Button>
+                  
                   </Magnetic>
                 </div>
               </Reveal>

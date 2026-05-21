@@ -23,7 +23,7 @@ export const siteConfig = {
     'LVJIN ROBOTICS',
     '绿晋科技'
   ],
-  authors: [{ name: '绿晋科技', url: 'https://github.com/AMJLTA' }],
+  authors: [{ name: '绿晋科技', url: 'https://github.com/AMqqqJLTA' }],
   creator: '绿晋科技',
   links: {
     github: 'https://github.com/AMJLTA/so101-guide-web',

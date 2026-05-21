@@ -30,7 +30,7 @@ export const siteConfig = {
     lerobot: 'https://github.com/huggingface/lerobot',
     huggingface: 'https://huggingface.co/lerobot',
     so101: 'https://github.com/TheRobotStudio/SO-ARM100',
-    inquiry: 'mailto:sales@greenjin.tech?subject=SO101%20SERIES%20%E8%AF%A2%E4%BB%B7'
+    inquiry: "https://mail.google.com/mail/?view=cm&fs=1&to=jliu44490@gmail.com&su=SO101%20SERIES%20询价",
   },
   nav: [
     { href: '/', label: '首页' },
@@ -47,10 +47,10 @@ export const siteConfig = {
 }
 
 /**
- * SO101 SERIES 产品规格
+ * LVJIN SERIES 产品规格
  */
 export const productSpecs = {
-  series: 'SO101 SERIES',
+  series: 'LVJIN SERIES',
   tagline: 'HIGH-PERFORMANCE INDUSTRIAL ROBOTIC ARM',
   taglineZh: '高性能工业机械臂',
   /** Hero 产品大图 — 用户右键保存附图到 public/lvjin-so101-hero.png 即可启用 */

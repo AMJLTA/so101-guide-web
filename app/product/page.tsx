@@ -42,13 +42,13 @@ import { productSpecs, siteConfig } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
 
 export const metadata: Metadata = {
-  title: 'SO101 SERIES · 高性能工业机械臂',
+  title: 'LVJIN SERIES · 高性能工业机械臂',
   description:
-    'LVJIN ROBOTICS SO101 SERIES：负载 10kg、臂展 1010mm、重复定位精度 ±0.02mm、IP54 防护、任意角度安装。开源生态 + 完整学习路径，工业、教育、科研一站式落地。',
+    'LVJIN ROBOTICS LVJIN SERIES：负载 10kg、臂展 1010mm、重复定位精度 ±0.02mm、IP54 防护、任意角度安装。开源生态 + 完整学习路径，工业、教育、科研一站式落地。',
   openGraph: {
-    title: 'SO101 SERIES · 高性能工业机械臂',
+    title: 'LVJIN SERIES · 高性能工业机械臂',
     description:
-      'LVJIN ROBOTICS SO101 SERIES：负载 10kg、臂展 1010mm、重复定位精度 ±0.02mm。',
+      'LVJIN ROBOTICS LVJIN SERIES：负载 10kg、臂展 1010mm、重复定位精度 ±0.02mm。',
     type: 'website'
   }
 }
@@ -87,7 +87,7 @@ const pricingTiers = [
     price: '咨询',
     badge: '面向高校 / 实验室',
     features: [
-      'SO101 机械臂定制版 ×1 套',
+      'LVJIN 机械臂定制版 ×1 套',
       '完整开源固件 + 源码',
       'LeRobot 兼容配置',
       '中文技术支持（工作日）',
@@ -100,7 +100,7 @@ const pricingTiers = [
     price: '咨询',
     badge: '推荐',
     features: [
-      'SO101 机械臂定制版 ×N 套（按需）',
+      'LVJIN 机械臂定制版 ×N 套（按需）',
       '主从双臂遥操作套件',
       '工业控制器集成（PLC / ROS2）',
       '现场调试 + 定制末端执行器',
@@ -114,7 +114,7 @@ const pricingTiers = [
     price: '咨询',
     badge: '面向职校 / 培训',
     features: [
-      'SO101 机械臂教学版（含教材）',
+      'LVJIN 机械臂教学版（含教材）',
       '12 套学员工位配置',
       '4 周课程包（模仿学习方向）',
       '远程技术答疑',
@@ -223,7 +223,7 @@ export default function ProductPage() {
                       {/* 产品图 — 用户右键保存附图到 public/lvjin-so101-hero.png 后自动出现 */}
                       <Image
                         src={productSpecs.heroImage}
-                        alt="SO101 SERIES 工业机械臂"
+                        alt="LVJIN SERIES 工业机械臂"
                         fill
                         priority
                         sizes="(max-width: 1024px) 100vw, 60vw"
@@ -570,7 +570,7 @@ export default function ProductPage() {
                         准备投产 / 教学采购
                       </Badge>
                       <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
-                        把 <ShimmerText>SO101 SERIES</ShimmerText> 带回你的产线 / 实验室
+                        把 <ShimmerText>LVJIN SERIES</ShimmerText> 带回你的产线 / 实验室
                       </h2>
                       <p className="mt-4 max-w-xl text-muted-foreground">
                         告诉我们你的应用场景（负载、节拍、末端类型、数量），我们 1 个工作日内

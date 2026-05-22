@@ -27,8 +27,10 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
-import { glossaryJa } from '@/lib/glossary-ja'
-import { errorDatabaseJa, aiResponsesJa } from '@/lib/course-data-ja'
+import {
+  composeResponseJa,
+  type ConversationContextJa
+} from '@/lib/assistant-engine-ja'
 import type { ChatMessage, ChatMessageSource } from '@/lib/types'
 
 const STORAGE_KEY = 'so101-assistant-ja-history-v1'
@@ -85,85 +87,6 @@ const typeLabel: Record<string, string> = {
   resource: 'リソース'
 }
 
-/**
- * Lightweight JP assistant engine.
- * Looks up the query against JP glossary / errorDatabase / aiResponses with simple
- * substring matching. A richer engine (matching the CN tokenizer + scorer) will land
- * in a follow-up round.
- */
-function composeResponseJa(query: string): {
-  content: string
-  sources: ChatMessageSource[]
-} {
-  const q = query.trim().toLowerCase()
-  if (!q) {
-    return { content: 'もう少し詳しく教えてください。', sources: [] }
-  }
-
-  const sources: ChatMessageSource[] = []
-  const fragments: string[] = []
-
-  // 1. FAQ (aiResponses) lookup
-  for (const [key, response] of Object.entries(aiResponsesJa)) {
-    if (q.includes(key) || key.includes(q)) {
-      fragments.push(response)
-      break
-    }
-  }
-
-  // 2. Glossary lookup
-  const glossHit = glossaryJa.find(
-    (g) =>
-      g.term.toLowerCase().includes(q) ||
-      q.includes(g.term.toLowerCase()) ||
-      g.termEn?.toLowerCase().includes(q)
-  )
-  if (glossHit && fragments.length === 0) {
-    fragments.push(`**${glossHit.term}** (${glossHit.termEn ?? ''})\n\n${glossHit.definition}`)
-    sources.push({
-      title: glossHit.term,
-      url: `/ja/glossary#${encodeURIComponent(glossHit.term)}`,
-      type: 'glossary'
-    })
-  }
-
-  // 3. Error database lookup
-  for (const [key, err] of Object.entries(errorDatabaseJa)) {
-    if (q.includes(key.toLowerCase()) || err.error.toLowerCase().includes(q)) {
-      fragments.push(
-        `### ${err.error}\n\n**原因**：${err.cause}\n\n**対処**：${err.solution}${
-          err.command ? `\n\n\`\`\`bash\n${err.command}\n\`\`\`` : ''
-        }\n\n> 次の一手：${err.nextStep}`
-      )
-      sources.push({
-        title: err.error,
-        url: `/ja/diagnose?q=${encodeURIComponent(err.error)}`,
-        type: 'error'
-      })
-      break
-    }
-  }
-
-  if (fragments.length === 0) {
-    return {
-      content: `「${query}」に直接該当する項目はナレッジベースで見つかりませんでした。
-
-以下を試してみてください：
-- **[トラブル診断](/ja/diagnose?q=${encodeURIComponent(query)})** でエラーを検索
-- **[用語集](/ja/glossary)** で概念を確認
-- **[学習パス](/ja/learn)** で関連章を参照
-
-または、表現を変えてもう一度ご質問ください。`,
-      sources: []
-    }
-  }
-
-  return {
-    content: fragments.join('\n\n---\n\n'),
-    sources
-  }
-}
-
 export default function AssistantPageJa() {
   return (
     <Suspense fallback={null}>
@@ -179,6 +102,7 @@ function AssistantContent() {
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [loaded, setLoaded] = useState(false)
+  const contextRef = useRef<ConversationContextJa>({})
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -243,7 +167,8 @@ function AssistantContent() {
 
     await new Promise((resolve) => setTimeout(resolve, 450))
 
-    const result = composeResponseJa(text)
+    const result = composeResponseJa(text, contextRef.current)
+    contextRef.current = result.nextContext
 
     setMessages((prev) => [
       ...prev,
@@ -252,7 +177,8 @@ function AssistantContent() {
         role: 'assistant',
         content: result.content,
         timestamp: new Date().toISOString(),
-        sources: result.sources
+        sources: result.sources,
+        intent: result.intent
       }
     ])
     setIsTyping(false)
@@ -260,6 +186,7 @@ function AssistantContent() {
 
   const handleNewChat = () => {
     setMessages([welcomeMessage])
+    contextRef.current = {}
     localStorage.removeItem(STORAGE_KEY)
     toast.success('新しい会話を開始しました')
     inputRef.current?.focus()
@@ -267,6 +194,7 @@ function AssistantContent() {
 
   const handleClearHistory = () => {
     setMessages([welcomeMessage])
+    contextRef.current = {}
     localStorage.removeItem(STORAGE_KEY)
     toast.success('履歴をクリアしました')
   }

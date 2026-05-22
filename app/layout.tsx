@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { ScrollToTop } from '@/components/scroll-to-top'
 import { CommandPalette } from '@/components/command-palette'
+import { HtmlLangSync } from '@/components/html-lang-sync'
 import { siteConfig } from '@/lib/site-config'
 import './globals.css'
 
@@ -97,6 +98,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <HtmlLangSync />
           {children}
           <CommandPalette />
           <ScrollToTop />

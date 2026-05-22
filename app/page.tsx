@@ -270,7 +270,7 @@ export default function HomePage() {
                 <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/40 bg-gradient-to-br from-[oklch(0.16_0.018_270)] to-[oklch(0.08_0.012_270)]">
                   <Image
                     src={productSpecs.heroImage}
-                    alt="SO101 SERIES 工业机械臂"
+                    alt="LVJIN SERIES 工业机械臂"
                     fill
                     sizes="(max-width: 1024px) 100vw, 55vw"
                     className="object-cover"
@@ -550,7 +550,7 @@ export default function HomePage() {
                     准备好<ShimmerText>开始</ShimmerText>了吗？
                   </h2>
                   <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-                    跟随结构化的章节路径学习，或直接采购 SO101 SERIES
+                    跟随结构化的章节路径学习，或直接采购 LVJIN SERIES
                     用于产线与教学。
                   </p>
                   <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">

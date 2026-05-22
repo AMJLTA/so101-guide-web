@@ -146,16 +146,7 @@ export default function AboutPageJa() {
                     </Button>
                   </Magnetic>
                   <Magnetic strength={0.4} range={140}>
-                    <Button asChild variant="outline" size="lg">
-                      <a
-                        href={siteConfigJa.links.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Github className="mr-1.5 h-4 w-4" />
-                        GitHub
-                      </a>
-                    </Button>
+                    
                   </Magnetic>
                 </div>
               </Reveal>

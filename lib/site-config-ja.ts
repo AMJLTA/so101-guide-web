@@ -31,7 +31,7 @@ export const siteConfigJa = {
     'ロボット学習',
     'LVJIN ROBOTICS'
   ],
-  authors: [{ name: 'LVJIN ROBOTICS', url: 'https://github.com/AMqqqJLTA' }],
+  authors: [{ name: 'LVJIN ROBOTICS', url: 'https://github.com/jliu44490-create/so101-guide-wed-quanxin' }],
   creator: 'LVJIN ROBOTICS',
   links: {
     github: 'https://github.com/jliu44490-create/so101-guide-wed-quanxin',

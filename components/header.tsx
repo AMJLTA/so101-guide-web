@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, Search, X, ChevronRight, Github, Languages } from 'lucide-react'
+import { Menu, Search, X, ChevronRight, Languages } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -160,21 +160,7 @@ export function Header() {
               <span>{labels.switchLang}</span>
             </Link>
           </Button>
-          <Button
-            asChild
-            variant="ghost"
-            size="icon"
-            className="hidden md:inline-flex"
-            aria-label={labels.githubAria}
-          >
-            <a
-              href={config.links.github}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Github className="h-4 w-4" />
-            </a>
-          </Button>
+          
           <ThemeToggle />
           <Button asChild size="sm" className="glow-primary hidden lg:inline-flex">
             <Link href={learnHref}>

@@ -1,34 +1,43 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
 import { BookOpen, Clock, Sparkles, Trophy } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Reveal, SpotlightCard } from '@/components/effects'
 import { useChapterStats } from '@/lib/use-progress'
 
+const i18n = {
+  zh: { totalChapters: '总课程数', completed: '已完成', duration: '预计时长', minutes: '分钟', overallProgress: '总体进度', inProgressNote: '个学习中', lockedNote: '个未开始' },
+  ja: { totalChapters: '総章数', completed: '完了', duration: '予想所要時間', minutes: '分', overallProgress: '全体の進捗', inProgressNote: ' 進行中', lockedNote: ' 未開始' }
+}
+
 export function LearnStats() {
+  const pathname = usePathname()
+  const locale = pathname?.startsWith('/ja') ? 'ja' : 'zh'
+  const t = i18n[locale]
   const { total, completed, inProgress, locked, totalMinutes, totalProgress } =
     useChapterStats()
 
   const cards = [
     {
       icon: BookOpen,
-      label: '总课程数',
+      label: t.totalChapters,
       value: total,
       bg: 'bg-primary/10',
       color: 'text-primary'
     },
     {
       icon: Trophy,
-      label: '已完成',
+      label: t.completed,
       value: completed,
       bg: 'bg-success/10',
       color: 'text-[var(--color-success)]'
     },
     {
       icon: Clock,
-      label: '预计时长',
-      value: `${totalMinutes} 分钟`,
+      label: t.duration,
+      value: `${totalMinutes} ${t.minutes}`,
       bg: 'bg-accent/10',
       color: 'text-accent'
     }
@@ -63,13 +72,13 @@ export function LearnStats() {
               <div className="mb-3 flex items-center justify-between">
                 <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <Sparkles className="h-3.5 w-3.5" />
-                  总体进度
+                  {t.overallProgress}
                 </p>
                 <p className="text-sm font-medium">{totalProgress}%</p>
               </div>
               <Progress value={totalProgress} className="h-2" />
               <p className="mt-2 text-xs text-muted-foreground">
-                {inProgress} 个学习中 · {locked} 个未开始
+                {inProgress}{t.inProgressNote} · {locked}{t.lockedNote}
               </p>
             </CardContent>
           </Card>

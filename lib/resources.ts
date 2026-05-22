@@ -10,7 +10,7 @@ export const resources: Resource[] = [
   },
   {
     title: 'SO-ARM100 硬件项目',
-    description: 'SO101 机械臂的开源硬件设计：BOM、3D 打印件、装配指南。',
+    description: 'SO101 机械臂的硬件设计资料：BOM、3D 打印件、装配指南。',
     url: 'https://github.com/TheRobotStudio/SO-ARM100',
     category: 'hardware',
     tags: ['SO101', 'BOM', '3D 打印']
@@ -59,7 +59,7 @@ export const resources: Resource[] = [
   },
   {
     title: 'DROID 数据集',
-    description: '76k 条多任务机械臂遥操作数据，是模仿学习里规模最大的开源资源之一。',
+    description: '76k 条多任务机械臂遥操作数据，是模仿学习里规模最大的公开数据集之一。',
     url: 'https://droid-dataset.github.io/',
     category: 'docs',
     tags: ['数据集', 'DROID']

@@ -7,7 +7,6 @@ import {
   ChevronRight,
   Code2,
   Cpu,
-  ExternalLink,
   Github,
   Lightbulb,
   Mail,
@@ -131,7 +130,7 @@ export default function AboutPage() {
               </Reveal>
               <Reveal delay={240}>
                 <p className="mx-auto mt-5 max-w-2xl text-pretty text-muted-foreground sm:text-lg">
-                  我们相信：开源的低成本机械臂 + 清晰的中文学习路径 + 真实可用的命令库，
+                  我们相信：一台低成本机械臂 + 清晰的中文学习路径 + 真实可用的命令库，
                   足以让任何一个对机器人感兴趣的人在几小时内动手训练自己的策略。
                 </p>
               </Reveal>
@@ -297,70 +296,28 @@ export default function AboutPage() {
         </section>
 
         <section className="border-y border-border/40 bg-card/30">
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-            <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-              <div>
-                <Badge variant="outline" className="border-border/60">
-                  <Users className="mr-1 h-3 w-3" />
-                  目标用户
-                </Badge>
-                <h2 className="mt-3 text-2xl font-bold sm:text-3xl">这份指南为谁而做？</h2>
-                <p className="mt-3 text-muted-foreground">
-                  无论你是为兴趣还是为研究入坑，只要愿意花一个下午跟着走完，就能把 ACT 在 SO101 上跑起来。
-                </p>
-                <ul className="mt-6 space-y-3">
-                  {audience.map((a) => (
-                    <li key={a.title} className="flex items-start gap-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/30">
-                        <a.icon className="h-4 w-4 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium">{a.title}</p>
-                        <p className="mt-0.5 text-sm text-muted-foreground">{a.text}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <Card className="overflow-hidden border-border/60">
-                <CardContent className="p-0">
-                  <div className="bg-gradient-to-br from-primary/15 via-background to-accent/15 p-8">
-                    <div className="text-center">
-                      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-background ring-1 ring-border/60">
-                        <Github className="h-7 w-7" />
-                      </div>
-                      <h3 className="text-xl font-bold">完全开源</h3>
-                      <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-                        本站源码、内容与配套数据均在 GitHub 上以 MIT 协议开源，欢迎 PR。
-                      </p>
-                      <div className="mt-6 flex flex-col items-center justify-center gap-2 sm:flex-row">
-                        <Button asChild>
-                          <a
-                            href={siteConfig.links.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            站点仓库
-                            <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
-                          </a>
-                        </Button>
-                        <Button asChild variant="outline">
-                          <a
-                            href={siteConfig.links.lerobot}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            LeRobot
-                            <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
-                          </a>
-                        </Button>
-                      </div>
-                    </div>
+          <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
+            <Badge variant="outline" className="border-border/60">
+              <Users className="mr-1 h-3 w-3" />
+              目标用户
+            </Badge>
+            <h2 className="mt-3 text-2xl font-bold sm:text-3xl">这份指南为谁而做？</h2>
+            <p className="mt-3 text-muted-foreground">
+              无论你是为兴趣还是为研究入坑，只要愿意花一个下午跟着走完，就能把 ACT 在 SO101 上跑起来。
+            </p>
+            <ul className="mt-6 space-y-3">
+              {audience.map((a) => (
+                <li key={a.title} className="flex items-start gap-3">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/30">
+                    <a.icon className="h-4 w-4 text-primary" />
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <div>
+                    <p className="font-medium">{a.title}</p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">{a.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 

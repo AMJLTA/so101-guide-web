@@ -1,8 +1,14 @@
-import Link from 'next/link'
-import { Bot, Github, Heart, Sparkles } from 'lucide-react'
-import { siteConfig } from '@/lib/site-config'
+'use client'
 
-const footerSections = [
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { Bot, Sparkles } from 'lucide-react'
+import { siteConfig } from '@/lib/site-config'
+import { siteConfigJa } from '@/lib/site-config-ja'
+
+type LinkItem = { label: string; href: string; external?: boolean }
+
+const sectionsZh: { title: string; links: LinkItem[] }[] = [
   {
     title: '产品',
     links: [
@@ -35,45 +41,82 @@ const footerSections = [
   }
 ]
 
+const sectionsJa: { title: string; links: LinkItem[] }[] = [
+  {
+    title: '製品',
+    links: [
+      { label: 'SO101 SERIES', href: '/ja/product' },
+      { label: 'お見積もり', href: siteConfigJa.links.inquiry, external: true }
+    ]
+  },
+  {
+    title: '学習',
+    links: [
+      { label: '学習パス', href: '/ja/learn' },
+      { label: '用語集', href: '/ja/glossary' },
+      { label: 'リソース', href: '/ja/resources' }
+    ]
+  },
+  {
+    title: 'ツール',
+    links: [
+      { label: 'トラブル診断', href: '/ja/diagnose' },
+      { label: 'AI アシスタント', href: '/ja/assistant' }
+    ]
+  },
+  {
+    title: 'プロジェクト',
+    links: [
+      { label: 'プロジェクトについて', href: '/ja/about' },
+      { label: 'LeRobot', href: siteConfigJa.links.lerobot, external: true },
+      { label: 'HuggingFace', href: siteConfigJa.links.huggingface, external: true }
+    ]
+  }
+]
+
 export function Footer() {
-  const year = new Date().getFullYear()
+  const pathname = usePathname()
+  const isJa = pathname?.startsWith('/ja') ?? false
+  const config = isJa ? siteConfigJa : siteConfig
+  const sections = isJa ? sectionsJa : sectionsZh
+  const homeHref = isJa ? '/ja' : '/'
+  const updatedLabel = isJa ? '継続更新中' : '持续更新'
 
   return (
     <footer className="border-t border-border/40 bg-card/30">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           <div>
-            <Link href="/" className="flex items-center gap-2">
+            <Link href={homeHref} className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 ring-1 ring-border/60">
                 <Bot className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-semibold">{siteConfig.brand}</p>
+                <p className="text-sm font-semibold">{config.brand}</p>
                 <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
                   Embodied AI Platform
                 </p>
               </div>
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              {siteConfig.description}
+              {config.description}
             </p>
             <div className="mt-5 flex items-center gap-2">
-              
               <span className="ml-2 inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/60 px-2.5 py-1 text-[11px] text-muted-foreground">
                 <Sparkles className="h-3 w-3 text-primary" />
-                持续更新
+                {updatedLabel}
               </span>
             </div>
           </div>
 
-          {footerSections.map((section) => (
+          {sections.map((section) => (
             <div key={section.title}>
               <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 {section.title}
               </p>
               <ul className="mt-4 space-y-2.5 text-sm">
                 {section.links.map((link) =>
-                  'external' in link && link.external ? (
+                  link.external ? (
                     <li key={link.label}>
                       <a
                         href={link.href}
@@ -101,8 +144,6 @@ export function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-border/40 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center">
-         
-         
         </div>
       </div>
     </footer>

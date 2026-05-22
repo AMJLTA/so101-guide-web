@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { CheckCircle2, Play, RotateCcw, Trophy } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -16,11 +17,41 @@ interface ChapterProgressActionsProps {
   baseProgress: number
 }
 
+const i18n = {
+  zh: {
+    completedTitle: '已完成本章 🎉',
+    inProgressTitle: '学习中',
+    lockedTitle: '未开始',
+    completedAtPrefix: '完成于',
+    syncNote: '完成后会同步到学习路径和首页统计',
+    markCompleted: '标记为完成',
+    markCompletedToast: '🎉 本章已标记完成',
+    reset: '重置',
+    resetToast: '已重置本章进度',
+    dateLocale: 'zh-CN'
+  },
+  ja: {
+    completedTitle: 'この章を完了しました 🎉',
+    inProgressTitle: '進行中',
+    lockedTitle: '未開始',
+    completedAtPrefix: '完了日:',
+    syncNote: '完了すると学習パスとホームの統計に反映されます',
+    markCompleted: '完了としてマーク',
+    markCompletedToast: '🎉 この章を完了しました',
+    reset: 'リセット',
+    resetToast: 'この章の進捗をリセットしました',
+    dateLocale: 'ja-JP'
+  }
+}
+
 export function ChapterProgressActions({
   chapterId,
   baseStatus,
   baseProgress
 }: ChapterProgressActionsProps) {
+  const pathname = usePathname()
+  const isJa = pathname?.startsWith('/ja') ?? false
+  const t = isJa ? i18n.ja : i18n.zh
   const { map, markVisited, markCompleted, resetChapter, hydrated } = useProgress()
   const entry = map[chapterId]
   const status = entry?.status ?? baseStatus
@@ -60,12 +91,12 @@ export function ChapterProgressActions({
           </div>
           <div>
             <p className="text-sm font-semibold">
-              {isCompleted ? '已完成本章 🎉' : status === 'in-progress' ? '学习中' : '未开始'}
+              {isCompleted ? t.completedTitle : status === 'in-progress' ? t.inProgressTitle : t.lockedTitle}
             </p>
             <p className="text-xs text-muted-foreground">
               {isCompleted && entry?.completedAt
-                ? `完成于 ${new Date(entry.completedAt).toLocaleDateString('zh-CN')}`
-                : '完成后会同步到学习路径和首页统计'}
+                ? `${t.completedAtPrefix} ${new Date(entry.completedAt).toLocaleDateString(t.dateLocale)}`
+                : t.syncNote}
             </p>
           </div>
         </div>
@@ -87,11 +118,11 @@ export function ChapterProgressActions({
               size="sm"
               onClick={() => {
                 resetChapter(chapterId)
-                toast.success('已重置本章进度')
+                toast.success(t.resetToast)
               }}
             >
               <RotateCcw className="mr-1 h-3.5 w-3.5" />
-              重置
+              {t.reset}
             </Button>
           ) : (
             <Button
@@ -99,11 +130,11 @@ export function ChapterProgressActions({
               className="glow-primary"
               onClick={() => {
                 markCompleted(chapterId)
-                toast.success('🎉 本章已标记完成')
+                toast.success(t.markCompletedToast)
               }}
             >
               <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
-              标记为完成
+              {t.markCompleted}
             </Button>
           )}
         </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { RotateCcw, Search, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { ChapterCard } from '@/components/chapter-card'
@@ -17,17 +18,49 @@ interface ChapterFilterProps {
   chapters: Chapter[]
 }
 
-const statusFilters: { value: FilterStatus; label: string; dotClass: string }[] = [
-  { value: 'all', label: '全部', dotClass: 'bg-muted-foreground' },
-  { value: 'completed', label: '已完成', dotClass: 'bg-[var(--color-success)]' },
-  { value: 'in-progress', label: '学习中', dotClass: 'bg-primary' },
-  { value: 'locked', label: '未开始', dotClass: 'bg-muted-foreground/40' }
-]
+const i18n = {
+  zh: {
+    all: '全部',
+    completed: '已完成',
+    inProgress: '学习中',
+    locked: '未开始',
+    searchPlaceholder: '搜索章节标题、英文或描述（例如 ACT、校准、CUDA）',
+    clearAria: '清空',
+    resetAll: '重置全部进度',
+    resetAllSuccess: '已重置全部学习进度',
+    noMatch: '没有找到匹配的章节',
+    noMatchHint: '试试换个关键词，或清除筛选条件',
+    resetFilters: '重置筛选'
+  },
+  ja: {
+    all: 'すべて',
+    completed: '完了',
+    inProgress: '進行中',
+    locked: '未開始',
+    searchPlaceholder: '章タイトル・英語名・説明で検索 (例: ACT、キャリブレーション、CUDA)',
+    clearAria: 'クリア',
+    resetAll: '進捗をすべてリセット',
+    resetAllSuccess: '学習進捗をリセットしました',
+    noMatch: '該当する章が見つかりません',
+    noMatchHint: 'キーワードを変えるか、フィルタを解除してください',
+    resetFilters: 'フィルタをリセット'
+  }
+}
 
 export function ChapterFilter({ chapters: baseChapters }: ChapterFilterProps) {
+  const pathname = usePathname()
+  const isJa = pathname?.startsWith('/ja') ?? false
+  const t = isJa ? i18n.ja : i18n.zh
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<FilterStatus>('all')
   const { map, resetAll } = useProgress()
+
+  const statusFilters: { value: FilterStatus; label: string; dotClass: string }[] = [
+    { value: 'all', label: t.all, dotClass: 'bg-muted-foreground' },
+    { value: 'completed', label: t.completed, dotClass: 'bg-[var(--color-success)]' },
+    { value: 'in-progress', label: t.inProgress, dotClass: 'bg-primary' },
+    { value: 'locked', label: t.locked, dotClass: 'bg-muted-foreground/40' }
+  ]
 
   // 合并用户进度 → 真实状态
   const chapters = useMemo(
@@ -67,13 +100,13 @@ export function ChapterFilter({ chapters: baseChapters }: ChapterFilterProps) {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="搜索章节标题、英文或描述（例如 ACT、校准、CUDA）"
+            placeholder={t.searchPlaceholder}
             className="pl-9"
           />
           {query && (
             <button
               type="button"
-              aria-label="清空"
+              aria-label={t.clearAria}
               onClick={() => setQuery('')}
               className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:bg-secondary"
             >
@@ -109,12 +142,12 @@ export function ChapterFilter({ chapters: baseChapters }: ChapterFilterProps) {
               size="sm"
               onClick={() => {
                 resetAll()
-                toast.success('已重置全部学习进度')
+                toast.success(t.resetAllSuccess)
               }}
               className="h-9 text-xs text-muted-foreground hover:text-destructive"
             >
               <RotateCcw className="mr-1 h-3 w-3" />
-              重置全部进度
+              {t.resetAll}
             </Button>
           )}
         </div>
@@ -123,9 +156,9 @@ export function ChapterFilter({ chapters: baseChapters }: ChapterFilterProps) {
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/60 py-16 text-center">
           <Search className="h-8 w-8 text-muted-foreground/50" />
-          <p className="mt-3 font-medium">没有找到匹配的章节</p>
+          <p className="mt-3 font-medium">{t.noMatch}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            试试换个关键词，或清除筛选条件
+            {t.noMatchHint}
           </p>
           <Button
             variant="ghost"
@@ -136,7 +169,7 @@ export function ChapterFilter({ chapters: baseChapters }: ChapterFilterProps) {
               setStatus('all')
             }}
           >
-            重置筛选
+            {t.resetFilters}
           </Button>
         </div>
       ) : (

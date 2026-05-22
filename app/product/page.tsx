@@ -44,7 +44,7 @@ import { cn } from '@/lib/utils'
 export const metadata: Metadata = {
   title: 'LVJIN SERIES · 高性能工业机械臂',
   description:
-    'LVJIN ROBOTICS LVJIN SERIES：负载 10kg、臂展 1010mm、重复定位精度 ±0.02mm、IP54 防护、任意角度安装。开源生态 + 完整学习路径，工业、教育、科研一站式落地。',
+    'LVJIN ROBOTICS LVJIN SERIES：负载 10kg、臂展 1010mm、重复定位精度 ±0.02mm、IP54 防护、任意角度安装。完整生态 + 配套学习路径，工业、教育、科研一站式落地。',
   openGraph: {
     title: 'LVJIN SERIES · 高性能工业机械臂',
     description:
@@ -61,7 +61,7 @@ const featureIcons = [Zap, Layers, Cpu, PackageOpen]
 const whyChoose = [
   {
     icon: Sparkles,
-    title: '开源生态',
+    title: 'LeRobot 兼容',
     desc: 'LeRobot / HuggingFace 完整兼容，社区驱动持续演进'
   },
   {
@@ -88,7 +88,7 @@ const pricingTiers = [
     badge: '面向高校 / 实验室',
     features: [
       'LVJIN 机械臂定制版 ×1 套',
-      '完整开源固件 + 源码',
+      '完整固件 + 配套源码',
       'LeRobot 兼容配置',
       '中文技术支持（工作日）',
       '配套学习路径访问'
@@ -166,7 +166,7 @@ export default function ProductPage() {
                 <Reveal delay={300}>
                   <p className="mt-5 max-w-xl text-muted-foreground sm:text-lg">
                     面向智能制造、教育科研与具身智能研发的 6 轴工业机械臂。
-                    开源生态、稳定刚体、可在任意角度安装，搭配本站完整学习路径，
+                    成熟生态、稳定刚体、可在任意角度安装，搭配本站完整学习路径，
                     让你<span className="text-foreground font-medium">从拿到机器到跑通策略</span>只需一个下午。
                   </p>
                 </Reveal>
@@ -209,7 +209,7 @@ export default function ProductPage() {
                     <span>·</span>
                     <span>一年质保</span>
                     <span>·</span>
-                    <span>开源固件</span>
+                    <span>配套固件</span>
                     <span>·</span>
                     <span>LeRobot 兼容</span>
                   </div>
@@ -452,7 +452,7 @@ export default function ProductPage() {
                   为什么选 LVJIN
                 </p>
                 <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-                  开源 + 实战 + <ShimmerText>本地化支持</ShimmerText>
+                  生态 + 实战 + <ShimmerText>本地化支持</ShimmerText>
                 </h2>
               </div>
             </Reveal>
@@ -486,7 +486,7 @@ export default function ProductPage() {
                 三种<ShimmerText>采购套餐</ShimmerText>
               </h2>
               <p className="mt-4 text-muted-foreground">
-                所有方案均提供开源固件、技术文档与中文支持。具体价格请联系销售获取最新报价单。
+                所有方案均提供完整固件、技术文档与中文支持。具体价格请联系销售获取最新报价单。
               </p>
             </div>
           </Reveal>

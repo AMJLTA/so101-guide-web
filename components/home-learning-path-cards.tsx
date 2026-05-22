@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
   Bot,
   Brain,
@@ -12,13 +13,31 @@ import {
   Sparkles,
   Zap
 } from 'lucide-react'
+import { useMemo } from 'react'
 import { Reveal, TiltCard } from '@/components/effects'
-import { useChapters } from '@/lib/use-progress'
+import { useProgress, applyUserProgress } from '@/lib/use-progress'
+import { chapters as chaptersZh } from '@/lib/course-data'
+import { chaptersJa } from '@/lib/course-data-ja'
 
 const stepIcons = [Brain, Cpu, Settings, Database, Sparkles, Rocket, HelpCircle, Bot, Zap]
 
+const i18n = {
+  zh: { completed: '已完成 ✓', inProgress: '学习中', locked: '未开始' },
+  ja: { completed: '完了 ✓', inProgress: '進行中', locked: '未開始' }
+}
+
 export function HomeLearningPathCards() {
-  const { chapters } = useChapters()
+  const pathname = usePathname()
+  const isJa = pathname?.startsWith('/ja') ?? false
+  const t = isJa ? i18n.ja : i18n.zh
+  const learnBase = isJa ? '/ja/learn' : '/learn'
+  const baseChapters = isJa ? chaptersJa : chaptersZh
+
+  const { map } = useProgress()
+  const chapters = useMemo(
+    () => baseChapters.map((c) => applyUserProgress(c, map)),
+    [baseChapters, map]
+  )
   const learningPath = chapters.slice(0, 6)
 
   return (
@@ -28,7 +47,7 @@ export function HomeLearningPathCards() {
         return (
           <Reveal key={chapter.id} delay={index * 60}>
             <Link
-              href={`/learn/${chapter.id}`}
+              href={`${learnBase}/${chapter.id}`}
               className="group relative block"
             >
               <TiltCard
@@ -54,10 +73,10 @@ export function HomeLearningPathCards() {
                         <span>·</span>
                         <span>
                           {chapter.status === 'completed'
-                            ? '已完成 ✓'
+                            ? t.completed
                             : chapter.status === 'in-progress'
-                              ? '学习中'
-                              : '未开始'}
+                              ? t.inProgress
+                              : t.locked}
                         </span>
                       </div>
                     </div>

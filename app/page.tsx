@@ -137,11 +137,11 @@ const faqs = [
   },
   {
     q: '这个站和 LeRobot 是什么关系？',
-    a: '本站完全基于 HuggingFace 开源的 LeRobot 框架，提供中文化的实战路径、错误库和经验总结，不替代官方文档，而是把它"翻译"成可上手的步骤。'
+    a: '本站完全基于 HuggingFace 的 LeRobot 框架，提供中文化的实战路径、错误库和经验总结，不替代官方文档，而是把它"翻译"成可上手的步骤。'
   },
   {
     q: '为什么聚焦 SO101 而不是其他机械臂？',
-    a: 'SO101（SO-100/SO-ARM100 衍生）开源、便宜、易复现，是入门具身智能的最佳硬件之一。本站方法论对其他 LeRobot 兼容机械臂同样适用。'
+    a: 'SO101（SO-100/SO-ARM100 衍生）便宜、易复现，是入门具身智能的最佳硬件之一。本站方法论对其他 LeRobot 兼容机械臂同样适用。'
   },
   {
     q: '我的数据采集出问题，找不到原因怎么办？',
@@ -183,7 +183,7 @@ export default function HomePage() {
 
               <h1 className="mt-6 text-balance text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl">
                 <TextReveal
-                  text={`Robotic Arm\n模仿学习`}
+                  text={`SO101\n模仿学习`}
                   as="span"
                   className="block whitespace-pre-line"
                   staggerMs={80}
@@ -270,7 +270,7 @@ export default function HomePage() {
                 <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/40 bg-gradient-to-br from-[oklch(0.16_0.018_270)] to-[oklch(0.08_0.012_270)]">
                   <Image
                     src={productSpecs.heroImage}
-                    alt="LVJIN SERIES 工业机械臂"
+                    alt="SO101 SERIES 工业机械臂"
                     fill
                     sizes="(max-width: 1024px) 100vw, 55vw"
                     className="object-cover"
@@ -314,7 +314,7 @@ export default function HomePage() {
                 <p className="mt-4 max-w-xl text-muted-foreground">
                   这套学习平台背后，是我们自研的 6 轴工业机械臂。
                   10 kg 负载、1010 mm 臂展、±0.02 mm 重复定位精度，
-                  IP54 防护可任意角度安装，全套开源固件与 LeRobot 兼容。
+                  IP54 防护可任意角度安装，配套固件与 LeRobot 完整兼容。
                 </p>
 
                 <div className="mt-7 grid grid-cols-3 gap-3">
@@ -550,7 +550,7 @@ export default function HomePage() {
                     准备好<ShimmerText>开始</ShimmerText>了吗？
                   </h2>
                   <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-                    跟随结构化的章节路径学习，或直接采购 LVJIN SERIES
+                    跟随结构化的章节路径学习，或直接采购 SO101 SERIES
                     用于产线与教学。
                   </p>
                   <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">

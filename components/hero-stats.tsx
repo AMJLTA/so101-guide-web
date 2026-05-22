@@ -4,14 +4,25 @@ import { AnimatedCounter } from '@/components/animated-counter'
 import { Reveal, ShimmerText, SpotlightCard } from '@/components/effects'
 import { useChapterStats } from '@/lib/use-progress'
 
-export function HeroStats({ errorCount = 30 }: { errorCount?: number }) {
+type Locale = 'zh' | 'ja'
+
+const labels = {
+  zh: { chapters: '总章节', duration: '预计时长', progress: '完成率', errors: '错误条目', chapterSuffix: ' 章', minSuffix: ' 分钟' },
+  ja: { chapters: '総章数', duration: '予想所要時間', progress: '完了率', errors: 'エラー項目', chapterSuffix: ' 章', minSuffix: ' 分' }
+}
+
+export function HeroStats({
+  errorCount = 30,
+  locale = 'zh'
+}: { errorCount?: number; locale?: Locale }) {
   const { total, totalProgress, totalMinutes } = useChapterStats()
+  const t = labels[locale]
 
   const stats = [
-    { label: '总章节', value: total, suffix: ' 章' },
-    { label: '预计时长', value: totalMinutes, suffix: ' 分钟' },
-    { label: '完成率', value: totalProgress, suffix: '%' },
-    { label: '错误条目', value: errorCount, suffix: '+' }
+    { label: t.chapters, value: total, suffix: t.chapterSuffix },
+    { label: t.duration, value: totalMinutes, suffix: t.minSuffix },
+    { label: t.progress, value: totalProgress, suffix: '%' },
+    { label: t.errors, value: errorCount, suffix: '+' }
   ]
 
   return (

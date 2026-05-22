@@ -46,7 +46,7 @@ export const chapters: Chapter[] = [
       '掌握串口连接和识别方法'
     ],
     principles: [
-      'SO101 是开源低成本机械臂，适合模仿学习研究',
+      'SO101 是低成本 6 自由度机械臂，适合模仿学习研究',
       'Leader 臂由人类操作，Follower 臂实时跟随',
       '通过 USB 串口与电脑通信，每个电机有独立 ID'
     ],

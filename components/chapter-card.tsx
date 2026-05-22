@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { ArrowRight, CheckCircle2, Clock, Lock, Play } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -14,29 +15,55 @@ interface ChapterCardProps {
   chapter: Chapter
 }
 
-const statusConfig = {
-  completed: {
-    icon: CheckCircle2,
-    label: '已完成',
-    badge:
-      'bg-success/10 text-[var(--color-success)] border-[oklch(from_var(--success)_l_c_h/0.3)]',
-    ring: 'hover:border-[oklch(from_var(--success)_l_c_h/0.4)] hover:shadow-[var(--color-success)]/10'
+const i18n = {
+  zh: {
+    completed: '已完成',
+    inProgress: '学习中',
+    locked: '未开始',
+    progress: '学习进度',
+    startLearning: '开始学习',
+    review: '复习本章',
+    continue: '继续学习'
   },
-  'in-progress': {
-    icon: Play,
-    label: '学习中',
-    badge: 'bg-primary/10 text-primary border-primary/30',
-    ring: 'hover:border-primary/50 hover:shadow-primary/10'
-  },
-  locked: {
-    icon: Lock,
-    label: '未开始',
-    badge: 'bg-muted text-muted-foreground border-border',
-    ring: 'hover:border-primary/40 hover:shadow-primary/5'
+  ja: {
+    completed: '完了',
+    inProgress: '進行中',
+    locked: '未開始',
+    progress: '学習進捗',
+    startLearning: '学習を始める',
+    review: 'この章を復習',
+    continue: '学習を続ける'
   }
-} as const
+}
 
 export function ChapterCard({ chapter: baseChapter }: ChapterCardProps) {
+  const pathname = usePathname()
+  const isJa = pathname?.startsWith('/ja') ?? false
+  const t = isJa ? i18n.ja : i18n.zh
+  const learnBase = isJa ? '/ja/learn' : '/learn'
+
+  const statusConfig = {
+    completed: {
+      icon: CheckCircle2,
+      label: t.completed,
+      badge:
+        'bg-success/10 text-[var(--color-success)] border-[oklch(from_var(--success)_l_c_h/0.3)]',
+      ring: 'hover:border-[oklch(from_var(--success)_l_c_h/0.4)] hover:shadow-[var(--color-success)]/10'
+    },
+    'in-progress': {
+      icon: Play,
+      label: t.inProgress,
+      badge: 'bg-primary/10 text-primary border-primary/30',
+      ring: 'hover:border-primary/50 hover:shadow-primary/10'
+    },
+    locked: {
+      icon: Lock,
+      label: t.locked,
+      badge: 'bg-muted text-muted-foreground border-border',
+      ring: 'hover:border-primary/40 hover:shadow-primary/5'
+    }
+  } as const
+
   const { map } = useProgress()
   const chapter = applyUserProgress(baseChapter, map)
   const status = statusConfig[chapter.status]
@@ -45,7 +72,7 @@ export function ChapterCard({ chapter: baseChapter }: ChapterCardProps) {
 
   return (
     <Link
-      href={`/learn/${chapter.id}`}
+      href={`${learnBase}/${chapter.id}`}
       className="group block"
     >
       <TiltCard
@@ -90,7 +117,7 @@ export function ChapterCard({ chapter: baseChapter }: ChapterCardProps) {
 
           <div className="mt-5 space-y-1.5">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">学习进度</span>
+              <span className="text-muted-foreground">{t.progress}</span>
               <span
                 className={cn(
                   'font-medium',
@@ -112,7 +139,7 @@ export function ChapterCard({ chapter: baseChapter }: ChapterCardProps) {
           </div>
 
           <div className="mt-4 flex items-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
-            {isFresh ? '开始学习' : chapter.status === 'completed' ? '复习本章' : '继续学习'}
+            {isFresh ? t.startLearning : chapter.status === 'completed' ? t.review : t.continue}
             <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
           </div>
         </CardContent>

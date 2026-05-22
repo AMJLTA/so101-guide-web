@@ -4,24 +4,44 @@ import { chapters } from '@/lib/course-data'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date()
+  const base = siteConfig.url.replace(/\/$/, '')
 
-  const staticRoutes: MetadataRoute.Sitemap = [
-    { url: siteConfig.url, lastModified, changeFrequency: 'weekly', priority: 1 },
-    { url: `${siteConfig.url}/product`, lastModified, changeFrequency: 'monthly', priority: 0.95 },
-    { url: `${siteConfig.url}/learn`, lastModified, changeFrequency: 'weekly', priority: 0.9 },
-    { url: `${siteConfig.url}/diagnose`, lastModified, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${siteConfig.url}/assistant`, lastModified, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${siteConfig.url}/glossary`, lastModified, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${siteConfig.url}/resources`, lastModified, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${siteConfig.url}/about`, lastModified, changeFrequency: 'yearly', priority: 0.5 }
+  const zhStatic: MetadataRoute.Sitemap = [
+    { url: `${base}/`, lastModified, changeFrequency: 'weekly', priority: 1 },
+    { url: `${base}/product`, lastModified, changeFrequency: 'monthly', priority: 0.95 },
+    { url: `${base}/learn`, lastModified, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${base}/diagnose`, lastModified, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${base}/assistant`, lastModified, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${base}/glossary`, lastModified, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${base}/resources`, lastModified, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${base}/about`, lastModified, changeFrequency: 'yearly', priority: 0.5 }
   ]
 
-  const chapterRoutes: MetadataRoute.Sitemap = chapters.map((chapter) => ({
-    url: `${siteConfig.url}/learn/${chapter.id}`,
-    lastModified,
-    changeFrequency: 'monthly',
-    priority: 0.7
-  }))
+  const jaStatic: MetadataRoute.Sitemap = [
+    { url: `${base}/ja`, lastModified, changeFrequency: 'weekly', priority: 0.95 },
+    { url: `${base}/ja/product`, lastModified, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${base}/ja/learn`, lastModified, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${base}/ja/diagnose`, lastModified, changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${base}/ja/assistant`, lastModified, changeFrequency: 'monthly', priority: 0.65 },
+    { url: `${base}/ja/glossary`, lastModified, changeFrequency: 'monthly', priority: 0.55 },
+    { url: `${base}/ja/resources`, lastModified, changeFrequency: 'monthly', priority: 0.55 },
+    { url: `${base}/ja/about`, lastModified, changeFrequency: 'yearly', priority: 0.45 }
+  ]
 
-  return [...staticRoutes, ...chapterRoutes]
+  const chapterRoutes: MetadataRoute.Sitemap = chapters.flatMap((chapter) => [
+    {
+      url: `${base}/learn/${chapter.id}`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.7
+    },
+    {
+      url: `${base}/ja/learn/${chapter.id}`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.65
+    }
+  ])
+
+  return [...zhStatic, ...jaStatic, ...chapterRoutes]
 }

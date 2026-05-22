@@ -61,7 +61,7 @@ export const glossary: GlossaryTerm[] = [
     term: 'LeRobot',
     termEn: 'LeRobot',
     definition:
-      'HuggingFace 开源的机器人学习框架，整合了数据采集、训练、推理三大环节，支持 SO100/SO101、Aloha、Koch、Stretch 等多种机械臂。',
+      'HuggingFace 推出的机器人学习框架，整合了数据采集、训练、推理三大环节，支持 SO100/SO101、Aloha、Koch、Stretch 等多种机械臂。',
     category: 'framework',
     related: ['ACT', 'HuggingFace Hub']
   },
@@ -69,7 +69,7 @@ export const glossary: GlossaryTerm[] = [
     term: 'SO101 / SO-ARM100',
     termEn: 'SO-100 Arm',
     definition:
-      'TheRobotStudio 开源的低成本 6 自由度机械臂方案，BOM 大约 100 美元，是入门具身智能与 LeRobot 模仿学习的最佳硬件之一。',
+      'TheRobotStudio 推出的低成本 6 自由度机械臂方案，BOM 大约 100 美元，是入门具身智能与 LeRobot 模仿学习的最佳硬件之一。',
     category: 'hardware',
     related: ['LeRobot', 'Leader/Follower']
   },
@@ -124,7 +124,7 @@ export const glossary: GlossaryTerm[] = [
     term: 'Hydra 配置',
     termEn: 'Hydra Config',
     definition:
-      'Facebook 开源的配置框架，LeRobot 用它管理训练参数。你可以在命令行用 policy=act env=so100 的方式覆写配置。',
+      'Facebook 推出的配置框架，LeRobot 用它管理训练参数。你可以在命令行用 policy=act env=so100 的方式覆写配置。',
     category: 'framework'
   }
 ]

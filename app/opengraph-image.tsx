@@ -104,7 +104,7 @@ export default async function OpengraphImage() {
               fontSize: 22
             }}
           >
-            {['9 个章节', 'LeRobot', 'ACT 算法', '开源免费'].map((tag) => (
+            {['9 个章节', 'LeRobot', 'ACT 算法', '中文实战'].map((tag) => (
               <div
                 key={tag}
                 style={{

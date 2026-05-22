@@ -17,7 +17,7 @@
  */
 
 import Image from 'next/image'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useHasFinePointer, usePrefersReducedMotion } from '@/lib/hooks'
 import { cn } from '@/lib/utils'
 
@@ -55,6 +55,23 @@ export function BrandCard({
   tags = ['Hardware', 'Software', 'Education'],
   maxTilt = 6
 }: BrandCardProps) {
+  const armImages = [
+    '/lvjin-so101-view-front.jpeg',
+    '/lvjin-so101-view-rear.jpeg',
+    '/lvjin-so101-view-side.jpeg',
+    '/lvjin-so101-view-top.jpeg'
+  ]
+
+  const [activeImage, setActiveImage] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveImage((prev) => (prev + 1) % armImages.length)
+    }, 2500)
+
+    return () => clearInterval(timer)
+  }, [])
+
   const wrapRef = useRef<HTMLDivElement>(null)
   const isFine = useHasFinePointer()
   const reduce = usePrefersReducedMotion()
@@ -210,26 +227,41 @@ export function BrandCard({
 
           {/* Logo */}
           <div
-            className="absolute inset-x-0 top-1/2 z-10 -translate-y-[60%] px-12"
-            style={{ transform: 'translateZ(40px) translateY(-60%)' }}
+            className="absolute inset-x-0 top-[5px] z-10 px-7"
+            style={{ transform: 'translateZ(40px)' }}
           >
-            <div className="relative mx-auto aspect-square w-full max-w-[200px]">
+            <div
+              className="relative mx-auto h-[500px] w-full max-w-[500px] overflow-hidden rounded-2xl"
+              style={{
+                maskImage:
+                  'radial-gradient(ellipse 70% 70% at 50% 50%, black 40%, transparent 100%)',
+                WebkitMaskImage:
+                  'radial-gradient(ellipse 70% 70% at 50% 50%, black 40%, transparent 100%)'
+              }}
+            >
               <div
                 aria-hidden
-                className="absolute inset-0 rounded-full blur-2xl opacity-60"
+                className="absolute inset-0 rounded-2xl blur-2xl opacity-50"
                 style={{
                   background:
-                    'radial-gradient(circle, oklch(from var(--primary) l c h / 0.4) 0%, transparent 70%)'
+                    'radial-gradient(circle, oklch(from var(--primary) l c h / 0.35) 0%, transparent 70%)'
                 }}
               />
-              <Image
-                src={logoSrc}
-                alt={title}
-                fill
-                priority
-                className="relative object-contain"
-                sizes="200px"
-              />
+
+              {armImages.map((src, index) => (
+                <Image
+                  key={src}
+                  src={src}
+                  alt={`${title} robotic arm ${index + 1}`}
+                  fill
+                  priority={index === 0}
+                  className={cn(
+                    'object-contain object-top transition-opacity duration-700',
+                    index === activeImage ? 'opacity-95' : 'opacity-0'
+                  )}
+                  sizes="270px"
+                />
+              ))}
             </div>
           </div>
 

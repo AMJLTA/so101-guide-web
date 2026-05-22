@@ -328,9 +328,9 @@ export function IridescentCard({
             aria-hidden
             className="pointer-events-none absolute inset-0"
             style={{
-              background: `url("${logoSrc}") center/82% no-repeat`,
+              background: `url("${logoSrc}") center 75%/82% no-repeat`,
               mixBlendMode: surf.logoBlend,
-              zIndex: 2
+              zIndex: 2,
             }}
           />
 

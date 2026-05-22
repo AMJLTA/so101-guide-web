@@ -34,7 +34,7 @@ export const siteConfigJa = {
   authors: [{ name: 'LVJIN ROBOTICS', url: 'https://github.com/AMqqqJLTA' }],
   creator: 'LVJIN ROBOTICS',
   links: {
-    github: 'https://github.com/AMJLTA/so101-guide-web',
+    github: 'https://github.com/jliu44490-create/so101-guide-wed-quanxin',
     lerobot: 'https://github.com/huggingface/lerobot',
     huggingface: 'https://huggingface.co/lerobot',
     so101: 'https://github.com/TheRobotStudio/SO-ARM100',

@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
+import { siteConfig } from '@/lib/site-config'
 import { siteConfigJa } from '@/lib/site-config-ja'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://so101.greenjin.tech'),
+  metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfigJa.name,
     template: `%s | ${siteConfigJa.shortName}`

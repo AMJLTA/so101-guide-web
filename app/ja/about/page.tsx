@@ -146,7 +146,16 @@ export default function AboutPageJa() {
                     </Button>
                   </Magnetic>
                   <Magnetic strength={0.4} range={140}>
-                    
+                    <Button asChild variant="outline" size="lg">
+                      <a
+                        href={siteConfigJa.links.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Github className="mr-1.5 h-4 w-4" />
+                        GitHub
+                      </a>
+                    </Button>
                   </Magnetic>
                 </div>
               </Reveal>
@@ -348,12 +357,12 @@ export default function AboutPageJa() {
 
           <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
             <p className="text-sm text-muted-foreground">
-              新しい章の公開通知を希望される方はメールアドレスをご登録ください
+              ご協業のご相談、バグ報告、章コンテンツの寄稿はメールにてお問い合わせください。
             </p>
             <Button asChild variant="ghost" size="sm">
-              <a href={`mailto:hello@example.com`}>
+              <a href={siteConfigJa.links.inquiry}>
                 <Mail className="mr-1.5 h-3.5 w-3.5" />
-                メール連絡（近日開放予定）
+                メールでお問い合わせ
               </a>
             </Button>
           </div>

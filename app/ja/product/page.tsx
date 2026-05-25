@@ -14,7 +14,6 @@ import {
   Layers,
   Mail,
   PackageOpen,
-  Phone,
   Rocket,
   Shield,
   Sparkles,
@@ -267,7 +266,7 @@ export default function ProductPageJa() {
                   href={siteConfigJa.links.inquiry}
                   className="hidden text-xs text-primary hover:underline sm:inline-flex sm:items-center sm:gap-1"
                 >
-                  詳細仕様書 PDF
+                  仕様書をリクエスト
                   <Download className="h-3 w-3" />
                 </a>
               </div>
@@ -596,14 +595,6 @@ export default function ProductPageJa() {
                           <a href={siteConfigJa.links.inquiry}>
                             <Mail className="mr-2 h-4 w-4" />
                             メールでお見積もり
-                          </a>
-                        </Button>
-                      </Magnetic>
-                      <Magnetic strength={0.4} range={120}>
-                        <Button asChild size="lg" variant="outline" className="h-12 w-full">
-                          <a href="tel:+8610-0000-0000">
-                            <Phone className="mr-2 h-4 w-4" />
-                            電話でお問い合わせ
                           </a>
                         </Button>
                       </Magnetic>

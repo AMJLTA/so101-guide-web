@@ -145,7 +145,16 @@ export default function AboutPage() {
                     </Button>
                   </Magnetic>
                   <Magnetic strength={0.4} range={140}>
-                    
+                    <Button asChild variant="outline" size="lg">
+                      <a
+                        href={siteConfig.links.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Github className="mr-1.5 h-4 w-4" />
+                        GitHub
+                      </a>
+                    </Button>
                   </Magnetic>
                 </div>
               </Reveal>
@@ -349,12 +358,12 @@ export default function AboutPage() {
 
           <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
             <p className="text-sm text-muted-foreground">
-              想留下你的邮箱以便我们发布新章节时通知？
+              想合作、报错反馈或提供章节素材？欢迎邮件联系。
             </p>
             <Button asChild variant="ghost" size="sm">
-              <a href={`mailto:hello@example.com`}>
+              <a href={siteConfig.links.inquiry}>
                 <Mail className="mr-1.5 h-3.5 w-3.5" />
-                邮件联系（即将开放）
+                邮件联系
               </a>
             </Button>
           </div>

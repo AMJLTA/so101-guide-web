@@ -5,14 +5,18 @@
  * shared components can swap to this at runtime via pathname detection.
  *
  * Brand name is intentionally kept as "LVJIN ROBOTICS" (no Japanese transliteration).
+ * The `url` field intentionally depends on the CN config so both locales follow
+ * the same Vercel-derived origin.
  */
+
+import { siteConfig } from './site-config'
 
 export const siteConfigJa = {
   name: 'SO101 模倣学習ガイド',
   shortName: 'SO101 ガイド',
   brand: 'LVJIN ROBOTICS',
   brandEn: 'LVJIN ROBOTICS',
-  url: 'https://so101.greenjin.tech/ja',
+  url: `${siteConfig.url}/ja`,
   description:
     'SO101 ロボットアームの模倣学習を、環境構築から ACT モデルのデプロイまで一気通貫で習得できる実践ガイドです。開発者・研究者・愛好家の皆さまを対象としています。',
   keywords: [
@@ -31,10 +35,10 @@ export const siteConfigJa = {
     'ロボット学習',
     'LVJIN ROBOTICS'
   ],
-  authors: [{ name: 'LVJIN ROBOTICS', url: 'https://github.com/jliu44490-create/so101-guide-wed-quanxin' }],
+  authors: [{ name: 'LVJIN ROBOTICS', url: 'https://github.com/AMqqqJLTA' }],
   creator: 'LVJIN ROBOTICS',
   links: {
-    github: 'https://github.com/jliu44490-create/so101-guide-wed-quanxin',
+    github: 'https://github.com/AMJLTA/so101-guide-web',
     lerobot: 'https://github.com/huggingface/lerobot',
     huggingface: 'https://huggingface.co/lerobot',
     so101: 'https://github.com/TheRobotStudio/SO-ARM100',

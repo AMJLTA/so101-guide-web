@@ -2,9 +2,20 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Bot, Sparkles } from 'lucide-react'
+import { Bot, Languages, Sparkles } from 'lucide-react'
 import { siteConfig } from '@/lib/site-config'
 import { siteConfigJa } from '@/lib/site-config-ja'
+
+function stripJaPrefix(pathname: string): string {
+  if (pathname === '/ja') return '/'
+  if (pathname.startsWith('/ja/')) return pathname.slice(3)
+  return pathname
+}
+
+function addJaPrefix(pathname: string): string {
+  if (pathname === '/') return '/ja'
+  return `/ja${pathname}`
+}
 
 type LinkItem = { label: string; href: string; external?: boolean }
 
@@ -81,6 +92,17 @@ export function Footer() {
   const sections = isJa ? sectionsJa : sectionsZh
   const homeHref = isJa ? '/ja' : '/'
   const updatedLabel = isJa ? '継続更新中' : '持续更新'
+  const year = new Date().getFullYear()
+  const copyright = isJa
+    ? `© ${year} LVJIN ROBOTICS. All rights reserved.`
+    : `© ${year} 绿晋科技 LVJIN ROBOTICS. 保留所有权利。`
+  const switchLocaleHref = !pathname
+    ? isJa ? '/' : '/ja'
+    : isJa ? stripJaPrefix(pathname) : addJaPrefix(pathname)
+  const switchLabel = isJa ? '中文' : '日本語'
+  const builtWithLabel = isJa
+    ? 'Built with Next.js · Tailwind · LeRobot'
+    : 'Built with Next.js · Tailwind · LeRobot'
 
   return (
     <footer className="border-t border-border/40 bg-card/30">
@@ -144,6 +166,20 @@ export function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-border/40 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center">
+          <p>{copyright}</p>
+          <div className="flex items-center gap-4">
+            <span className="font-mono uppercase tracking-[0.12em] text-muted-foreground/70">
+              {builtWithLabel}
+            </span>
+            <Link
+              href={switchLocaleHref}
+              prefetch={false}
+              className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
+            >
+              <Languages className="h-3 w-3" />
+              {switchLabel}
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

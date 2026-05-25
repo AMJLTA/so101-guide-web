@@ -14,7 +14,6 @@ import {
   Layers,
   Mail,
   PackageOpen,
-  Phone,
   Rocket,
   Shield,
   Sparkles,
@@ -269,7 +268,7 @@ export default function ProductPage() {
                   href={siteConfig.links.inquiry}
                   className="hidden text-xs text-primary hover:underline sm:inline-flex sm:items-center sm:gap-1"
                 >
-                  完整规格书 PDF
+                  索取完整规格书
                   <Download className="h-3 w-3" />
                 </a>
               </div>
@@ -598,14 +597,6 @@ export default function ProductPage() {
                           <a href={siteConfig.links.inquiry}>
                             <Mail className="mr-2 h-4 w-4" />
                             邮件询价
-                          </a>
-                        </Button>
-                      </Magnetic>
-                      <Magnetic strength={0.4} range={120}>
-                        <Button asChild size="lg" variant="outline" className="h-12 w-full">
-                          <a href="tel:+8610-0000-0000">
-                            <Phone className="mr-2 h-4 w-4" />
-                            电话咨询
                           </a>
                         </Button>
                       </Magnetic>

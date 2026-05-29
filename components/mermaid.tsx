@@ -14,12 +14,17 @@ interface MermaidProps {
  * Client-only Mermaid diagram renderer.
  *
  * - Dynamically imports `mermaid` on mount so it never inflates the initial JS
- *   bundle. SSR/SSG produce a code-block fallback that's already readable for
- *   crawlers and no-JS users.
- * - Re-renders when the theme switches (dark/light) so colors stay consistent.
- * - If the `mermaid` package isn't installed (i.e. `pnpm add mermaid` hasn't
- *   been run after applying the patch), we still show the source verbatim so
- *   the page doesn't crash.
+ *   bundle. SSR/SSG produce a source-block fallback that's already readable
+ *   for crawlers and no-JS users.
+ * - Validates the source with `mermaid.parse` BEFORE calling `render`. In v11
+ *   the renderer happily emits a "Syntax error in text" SVG when the source
+ *   is broken — we'd rather catch that and show the raw source than embed a
+ *   confusing bomb icon.
+ * - Re-renders on theme change but waits for `resolvedTheme` to be defined,
+ *   so the effect only fires once after hydration instead of twice
+ *   (undefined → dark) which previously caused duplicate render attempts.
+ * - If the `mermaid` package isn't installed, we surface the install hint
+ *   instead of crashing the page.
  */
 export function Mermaid({ source, caption, className }: MermaidProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -29,6 +34,11 @@ export function Mermaid({ source, caption, className }: MermaidProps) {
   const [rendered, setRendered] = useState(false)
 
   useEffect(() => {
+    // Wait for the theme to resolve (undefined on first render → dark/light on
+    // hydration). Without this guard the effect would run twice and try to
+    // render the same diagram twice with potentially different themes.
+    if (!resolvedTheme) return
+
     let cancelled = false
     const node = containerRef.current
     if (!node) return
@@ -42,17 +52,24 @@ export function Mermaid({ source, caption, className }: MermaidProps) {
           fontFamily: 'var(--font-geist), system-ui, sans-serif',
           securityLevel: 'loose'
         })
+
+        // Validate first — parse() throws on syntax errors, render() silently
+        // produces an error-SVG that's worse than no diagram at all.
+        await mermaid.parse(source)
+
         const { svg } = await mermaid.render(idRef.current, source)
         if (!cancelled && node) {
           node.innerHTML = svg
           setRendered(true)
+          setError(null)
         }
       } catch (e) {
         if (!cancelled) {
+          setRendered(false)
           setError(
             e instanceof Error
-              ? e.message
-              : '無法載入 mermaid。请运行 `pnpm add mermaid` 安装。'
+              ? e.message.split('\n')[0]
+              : 'Mermaid 渲染失败。请检查图源语法。'
           )
         }
       }
@@ -72,11 +89,13 @@ export function Mermaid({ source, caption, className }: MermaidProps) {
     >
       <div className="overflow-x-auto px-4 py-5">
         {error ? (
-          <pre className="font-mono text-xs text-muted-foreground">{source}</pre>
+          <pre className="font-mono text-xs text-muted-foreground whitespace-pre">
+            {source}
+          </pre>
         ) : (
           <>
             {!rendered && (
-              <pre className="font-mono text-xs text-muted-foreground opacity-60">
+              <pre className="font-mono text-xs text-muted-foreground opacity-60 whitespace-pre">
                 {source}
               </pre>
             )}

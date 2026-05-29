@@ -68,32 +68,30 @@ export const chapters: Chapter[] = [
       {
         title: '模仿学习标准 pipeline',
         source: `flowchart LR
-    A[人类专家] -->|演示 N 条轨迹| B[(数据集<br/>状态 s + 动作 a)]
-    B -->|监督学习| C[策略 π_θ]
-    C -->|s ⇒ a| D[机械臂]
-    D -.->|新状态 s'| C
-    style A fill:#7c5cff,color:#fff
-    style C fill:#22c55e,color:#fff
-    style D fill:#0ea5e9,color:#fff`,
+    A["人类专家"] -->|"演示 N 条轨迹"| B["数据集 (s, a)"]
+    B -->|"监督学习"| C["策略 π_theta"]
+    C -->|"s -> a"| D["机械臂"]
+    D -.->|"新状态 s'"| C
+    style A fill:#7c5cff,stroke:#7c5cff,color:#fff
+    style C fill:#22c55e,stroke:#22c55e,color:#fff
+    style D fill:#0ea5e9,stroke:#0ea5e9,color:#fff`,
         caption: '专家通过演示提供监督信号，策略学一个「看到 s 就输出 a」的映射。注意环路：机械臂执行后产生新状态，又喂回策略。'
       },
       {
         title: '强化学习 vs 模仿学习的数据来源对比',
         source: `flowchart TB
-    subgraph RL[强化学习 RL]
+    subgraph RL ["强化学习 RL"]
         direction LR
-        R1[随机动作] --> R2[环境反馈奖励 r]
-        R2 --> R3[更新策略]
+        R1["随机动作"] --> R2["环境反馈奖励 r"]
+        R2 --> R3["更新策略"]
         R3 --> R1
     end
-    subgraph IL[模仿学习 IL]
+    subgraph IL ["模仿学习 IL"]
         direction LR
-        I1[专家演示] --> I2[(s, a) 数据集]
-        I2 --> I3[监督学习]
-        I3 --> I4[策略]
-    end
-    style RL fill:#fef3c7,stroke:#f59e0b
-    style IL fill:#dbeafe,stroke:#3b82f6`,
+        I1["专家演示"] --> I2["数据集 (s, a)"]
+        I2 --> I3["监督学习"]
+        I3 --> I4["策略"]
+    end`,
         caption: 'RL 靠「试错+奖励」循环，需要大量真实交互；IL 一次性吃掉演示数据，训练流程跟图像分类几乎一样。'
       }
     ],

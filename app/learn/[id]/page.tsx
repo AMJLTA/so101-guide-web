@@ -5,14 +5,21 @@ import {
   AlertTriangle,
   ArrowLeft,
   ArrowRight,
+  BookMarked,
+  Brain,
   CheckCircle2,
   ChevronRight,
   Clock,
+  ExternalLink,
+  GraduationCap,
+  HelpCircle,
   Lightbulb,
   ListChecks,
+  Sparkles,
   Target,
   Terminal,
-  Trophy
+  Trophy,
+  Wand2
 } from 'lucide-react'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
@@ -20,6 +27,14 @@ import { CodeBlock } from '@/components/code-block'
 import { ChapterToc } from '@/components/chapter-toc'
 import { ReadingProgress } from '@/components/reading-progress'
 import { ChapterProgressActions } from '@/components/chapter-progress-actions'
+import { Prose } from '@/components/prose'
+import { Mermaid } from '@/components/mermaid'
+import {
+  ExerciseList,
+  PitfallList,
+  QuizList,
+  WalkthroughBlock
+} from '@/components/callouts'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -85,14 +100,27 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
   const status = statusConfig[chapter.status]
   const StatusIcon = status.icon
 
+  // When a chapter provides `walkthrough`, prefer it over the legacy `steps`.
+  const hasWalkthrough = (chapter.walkthrough?.length ?? 0) > 0
+  const showLegacySteps = !hasWalkthrough && chapter.steps.length > 0
+
   const sections: { id: string; label: string; available: boolean }[] = [
     { id: 'overview', label: '概览', available: true },
+    { id: 'introduction', label: '导读', available: !!chapter.introduction },
+    { id: 'why', label: '为什么重要', available: !!chapter.whyItMatters },
     { id: 'objectives', label: '学习目标', available: chapter.objectives.length > 0 },
-    { id: 'principles', label: '原理解释', available: chapter.principles.length > 0 },
-    { id: 'steps', label: '操作步骤', available: chapter.steps.length > 0 },
+    { id: 'principles', label: '核心原理', available: chapter.principles.length > 0 },
+    { id: 'diagrams', label: '架构图', available: (chapter.diagrams?.length ?? 0) > 0 },
+    { id: 'walkthrough', label: '逐步讲解', available: hasWalkthrough },
+    { id: 'steps', label: '操作步骤', available: showLegacySteps },
     { id: 'commands', label: '命令代码', available: chapter.commands.length > 0 },
+    { id: 'pitfalls', label: '常见误区', available: (chapter.pitfalls?.length ?? 0) > 0 },
     { id: 'checkpoints', label: '检查点', available: chapter.checkpoints.length > 0 },
-    { id: 'errors', label: '常见错误', available: chapter.errors.length > 0 }
+    { id: 'exercises', label: '动手练习', available: (chapter.exercises?.length ?? 0) > 0 },
+    { id: 'self-check', label: '自测', available: (chapter.selfCheck?.length ?? 0) > 0 },
+    { id: 'errors', label: '常见错误', available: chapter.errors.length > 0 },
+    { id: 'further', label: '延伸阅读', available: (chapter.furtherReading?.length ?? 0) > 0 },
+    { id: 'summary', label: '小结', available: !!chapter.summary }
   ].filter((s) => s.available)
 
   return (
@@ -152,6 +180,54 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
             </header>
 
             <div className="space-y-6">
+              {chapter.introduction && (
+                <Card id="introduction" className="scroll-mt-24 border-border/60">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <BookMarked className="h-5 w-5 text-primary" />
+                      导读
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Prose content={chapter.introduction} />
+                  </CardContent>
+                </Card>
+              )}
+
+              {chapter.whyItMatters && (
+                <Card
+                  id="why"
+                  className="scroll-mt-24 border-primary/30 bg-gradient-to-br from-primary/5 via-background to-accent/5"
+                >
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      为什么重要
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Prose content={chapter.whyItMatters} />
+                  </CardContent>
+                </Card>
+              )}
+
+              {chapter.keyTerms && chapter.keyTerms.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border/60 bg-card/40 p-4">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    本章关键术语
+                  </span>
+                  {chapter.keyTerms.map((term) => (
+                    <Link
+                      key={term}
+                      href={`/glossary#${encodeURIComponent(term)}`}
+                      className="rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-xs text-primary transition-colors hover:bg-primary/20"
+                    >
+                      {term}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
               {chapter.objectives.length > 0 && (
                 <Card id="objectives" className="scroll-mt-24 border-border/60">
                   <CardHeader className="pb-3">
@@ -178,7 +254,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-lg">
                       <Lightbulb className="h-5 w-5 text-yellow-500" />
-                      原理解释
+                      核心原理
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -196,7 +272,42 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                 </Card>
               )}
 
-              {chapter.steps.length > 0 && (
+              {chapter.diagrams && chapter.diagrams.length > 0 && (
+                <Card id="diagrams" className="scroll-mt-24 border-border/60">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Brain className="h-5 w-5 text-accent" />
+                      架构图
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {chapter.diagrams.map((d, i) => (
+                      <div key={i}>
+                        {d.title && (
+                          <p className="mb-1 text-sm font-semibold">{d.title}</p>
+                        )}
+                        <Mermaid source={d.source} caption={d.caption} />
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
+
+              {hasWalkthrough && chapter.walkthrough && (
+                <Card id="walkthrough" className="scroll-mt-24 border-border/60">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Wand2 className="h-5 w-5 text-primary" />
+                      逐步讲解
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <WalkthroughBlock steps={chapter.walkthrough} />
+                  </CardContent>
+                </Card>
+              )}
+
+              {showLegacySteps && (
                 <Card id="steps" className="scroll-mt-24 border-border/60">
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-lg">
@@ -250,6 +361,20 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                 </Card>
               )}
 
+              {chapter.pitfalls && chapter.pitfalls.length > 0 && (
+                <Card id="pitfalls" className="scroll-mt-24 border-rose-500/30">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <AlertTriangle className="h-5 w-5 text-rose-500" />
+                      常见误区
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <PitfallList items={chapter.pitfalls} />
+                  </CardContent>
+                </Card>
+              )}
+
               {chapter.checkpoints.length > 0 && (
                 <Card id="checkpoints" className="scroll-mt-24 border-border/60">
                   <CardHeader className="pb-3">
@@ -270,6 +395,37 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                         </li>
                       ))}
                     </ul>
+                  </CardContent>
+                </Card>
+              )}
+
+              {chapter.exercises && chapter.exercises.length > 0 && (
+                <Card
+                  id="exercises"
+                  className="scroll-mt-24 border-primary/30 bg-primary/[0.02]"
+                >
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <GraduationCap className="h-5 w-5 text-primary" />
+                      动手练习
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ExerciseList items={chapter.exercises} />
+                  </CardContent>
+                </Card>
+              )}
+
+              {chapter.selfCheck && chapter.selfCheck.length > 0 && (
+                <Card id="self-check" className="scroll-mt-24 border-border/60">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <HelpCircle className="h-5 w-5 text-accent" />
+                      自测
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <QuizList items={chapter.selfCheck} />
                   </CardContent>
                 </Card>
               )}
@@ -313,6 +469,58 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                         )}
                       </div>
                     ))}
+                  </CardContent>
+                </Card>
+              )}
+
+              {chapter.furtherReading && chapter.furtherReading.length > 0 && (
+                <Card id="further" className="scroll-mt-24 border-border/60">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <BookMarked className="h-5 w-5 text-accent" />
+                      延伸阅读
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-3">
+                      {chapter.furtherReading.map((r, i) => (
+                        <li key={i} className="flex items-start gap-3">
+                          <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                          <div className="min-w-0 flex-1">
+                            <a
+                              href={r.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm font-medium text-primary hover:underline"
+                            >
+                              {r.title}
+                            </a>
+                            {r.note && (
+                              <p className="mt-0.5 text-xs text-muted-foreground">
+                                {r.note}
+                              </p>
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
+
+              {chapter.summary && (
+                <Card
+                  id="summary"
+                  className="scroll-mt-24 border-[oklch(from_var(--success)_l_c_h/0.3)] bg-success/5"
+                >
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <CheckCircle2 className="h-5 w-5 text-[var(--color-success)]" />
+                      小结
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Prose content={chapter.summary} />
                   </CardContent>
                 </Card>
               )}

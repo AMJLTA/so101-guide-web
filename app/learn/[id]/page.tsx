@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Clock,
   ExternalLink,
+  Gamepad2,
   GraduationCap,
   HelpCircle,
   Lightbulb,
@@ -40,6 +41,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { chapters } from '@/lib/course-data'
+import { hasLesson } from '@/lib/lessons'
 import { siteConfig } from '@/lib/site-config'
 
 interface ChapterPageProps {
@@ -143,6 +145,40 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
           <ChevronRight className="h-3.5 w-3.5" />
           <span className="text-foreground">第 {chapter.id} 章</span>
         </nav>
+
+        {/* Mode switcher: prominent banner when this chapter has an interactive lesson */}
+        {hasLesson(chapter.id) && (
+          <div className="mb-8 overflow-hidden rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/10 via-primary/5 to-background">
+            <div className="flex flex-col items-start gap-4 p-5 sm:flex-row sm:items-center sm:p-6">
+              <div className="flex items-start gap-3 sm:items-center">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-accent/20 to-primary/20 ring-1 ring-accent/30">
+                  <Gamepad2 className="h-6 w-6 text-accent" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-accent">
+                    本章有互动课
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed sm:text-base">
+                    <strong>不想看文字？</strong>试试 7 分钟的互动版本 —— 一张张卡片玩着学，比纯阅读吸收快。
+                  </p>
+                </div>
+              </div>
+              <Button
+                asChild
+                size="lg"
+                className="glow-primary h-12 w-full px-6 sm:w-auto sm:shrink-0"
+              >
+                <Link href={`/learn/${chapter.id}/play`}>
+                  🎮 开始互动课
+                  <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+            <div className="border-t border-accent/20 bg-background/30 px-5 py-2 text-[11px] text-muted-foreground sm:px-6">
+              你正在阅读 <strong className="text-foreground">完整文档版</strong> — 适合复习和深入。互动课则适合首次学习。
+            </div>
+          </div>
+        )}
 
         <div className="grid gap-10 lg:grid-cols-[1fr_240px]">
           <article className="min-w-0">

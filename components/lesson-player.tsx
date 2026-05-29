@@ -22,6 +22,7 @@ import {
   Check,
   CheckCircle2,
   ChevronRight,
+  Gamepad2,
   X
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -156,19 +157,34 @@ export function LessonPlayer({ lesson }: LessonPlayerProps) {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      {/* Top bar: progress + escape */}
+      {/* Top bar: mode switcher + progress + escape */}
       <header className="sticky top-0 z-30 border-b border-border/40 bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center gap-4 px-4 py-3 sm:px-6">
+        <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6 lg:px-8">
           <Link
-            href={`/learn/${lesson.chapterId}`}
-            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            href="/learn"
+            className="shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             aria-label="退出本课"
           >
             <X className="h-4 w-4" />
           </Link>
 
+          {/* Persistent mode switcher — works on any card */}
+          <div className="hidden shrink-0 items-center gap-0.5 rounded-full border border-border/60 bg-card/60 p-0.5 sm:flex">
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+              <Gamepad2 className="h-3 w-3" />
+              互动课
+            </span>
+            <Link
+              href={`/learn/${lesson.chapterId}`}
+              className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <BookOpen className="h-3 w-3" />
+              文档
+            </Link>
+          </div>
+
           <div className="flex-1">
-            <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
+            <div className="h-2 overflow-hidden rounded-full bg-secondary">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-300"
                 style={{ width: `${progress}%` }}
@@ -185,11 +201,23 @@ export function LessonPlayer({ lesson }: LessonPlayerProps) {
               )}
             </div>
           </div>
+
+          {/* Mobile-only doc shortcut (icon button) */}
+          <Link
+            href={`/learn/${lesson.chapterId}`}
+            className="shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground sm:hidden"
+            aria-label="查看文档"
+          >
+            <BookOpen className="h-4 w-4" />
+          </Link>
         </div>
       </header>
 
-      <main className="flex flex-1 items-start justify-center px-4 py-8 sm:py-12">
-        <div key={card.id} className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <main className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 sm:py-12 lg:px-12 lg:py-20">
+        <div
+          key={card.id}
+          className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-2 duration-300 lg:max-w-4xl"
+        >
           <CardSwitch
             card={card}
             isLast={isLast}
@@ -201,7 +229,7 @@ export function LessonPlayer({ lesson }: LessonPlayerProps) {
       </main>
 
       <footer className="border-t border-border/40 bg-background/60 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3 sm:px-6">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Button
             variant="ghost"
             size="sm"
@@ -217,10 +245,10 @@ export function LessonPlayer({ lesson }: LessonPlayerProps) {
           </p>
           <Link
             href={`/learn/${lesson.chapterId}`}
-            className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+            className="hidden items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
           >
             <BookOpen className="h-3.5 w-3.5" />
-            查看文档
+            查看完整文档
           </Link>
         </div>
       </footer>
@@ -285,18 +313,18 @@ function NextButton({
       size={size}
       variant={variant}
       className={cn(
-        'group h-12 px-8 text-base',
+        'group h-12 px-8 text-base sm:h-14 sm:px-12 sm:text-lg',
         variant === 'default' && 'glow-primary'
       )}
     >
       {label}
-      <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+      <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-0.5 sm:h-5 sm:w-5" />
     </Button>
   )
 }
 
 function CardShell({ children }: { children: React.ReactNode }) {
-  return <div className="space-y-6">{children}</div>
+  return <div className="space-y-6 sm:space-y-8 lg:space-y-10">{children}</div>
 }
 
 /* ────────────────────────────────────────────────────────────────────── */
@@ -310,17 +338,19 @@ function IntroCardView({
   return (
     <CardShell>
       {card.emoji && (
-        <div className="text-center text-6xl sm:text-7xl">{card.emoji}</div>
+        <div className="text-center text-7xl sm:text-8xl lg:text-9xl">
+          {card.emoji}
+        </div>
       )}
       {card.title && (
-        <h1 className="text-center text-3xl font-bold sm:text-4xl">
+        <h1 className="text-center text-3xl font-bold leading-tight sm:text-5xl lg:text-6xl">
           {card.title}
         </h1>
       )}
-      <div className="mx-auto max-w-xl text-center text-lg leading-relaxed text-muted-foreground sm:text-xl">
+      <div className="mx-auto max-w-2xl text-center text-lg leading-relaxed text-muted-foreground sm:text-2xl lg:text-3xl lg:leading-snug">
         <Prose content={card.body} size="md" />
       </div>
-      <div className="flex justify-center pt-2">
+      <div className="flex justify-center pt-2 sm:pt-4">
         <NextButton onClick={onNext} label={card.cta ?? '继续'} />
       </div>
     </CardShell>
@@ -338,18 +368,20 @@ function RevealCardView({
   const [revealed, setRevealed] = useState(false)
   return (
     <CardShell>
-      <div className="mx-auto max-w-xl text-center text-lg leading-relaxed sm:text-xl">
+      <div className="mx-auto max-w-2xl text-center text-xl leading-relaxed sm:text-2xl lg:text-3xl lg:leading-snug">
         <Prose content={card.prompt} size="md" />
       </div>
 
       {!revealed ? (
-        <div className="flex justify-center">
+        <div className="flex justify-center pt-2">
           <NextButton onClick={() => setRevealed(true)} label={card.revealCta} />
         </div>
       ) : (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 space-y-6">
-          <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 p-6 sm:p-8">
-            <Prose content={card.reveal} />
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 space-y-6 sm:space-y-8">
+          <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 p-6 sm:p-10 lg:p-12">
+            <div className="text-base leading-relaxed sm:text-lg lg:text-xl">
+              <Prose content={card.reveal} />
+            </div>
           </div>
           <div className="flex justify-center">
             <NextButton onClick={onNext} label={card.followCta ?? '继续'} />
@@ -384,11 +416,11 @@ function ChoiceCardView({
 
   return (
     <CardShell>
-      <div className="text-center text-xl font-semibold leading-snug sm:text-2xl">
+      <div className="text-center text-xl font-semibold leading-snug sm:text-3xl lg:text-4xl lg:leading-snug">
         <Prose content={card.question} />
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 sm:space-y-4">
         {card.options.map((opt) => {
           const isPicked = picked?.id === opt.id
           const showStateIcon = picked && opt.correct
@@ -399,7 +431,7 @@ function ChoiceCardView({
               onClick={() => handlePick(opt)}
               disabled={!!picked}
               className={cn(
-                'group flex w-full items-start gap-3 rounded-xl border bg-card/60 p-4 text-left transition-all',
+                'group flex w-full items-start gap-3 rounded-xl border bg-card/60 p-4 text-left transition-all sm:gap-4 sm:p-5 lg:p-6',
                 !picked && 'hover:-translate-y-0.5 hover:border-primary/40 hover:bg-card hover:shadow-md hover:shadow-primary/5',
                 isPicked && opt.correct && 'border-emerald-500/60 bg-emerald-500/10',
                 isPicked && !opt.correct && anyCorrect && 'border-rose-500/60 bg-rose-500/10',
@@ -408,15 +440,15 @@ function ChoiceCardView({
                 'border-border/60'
               )}
             >
-              {opt.emoji && <span className="text-2xl">{opt.emoji}</span>}
-              <span className="flex-1 text-sm font-medium leading-snug sm:text-base">
+              {opt.emoji && <span className="text-2xl sm:text-3xl">{opt.emoji}</span>}
+              <span className="flex-1 text-base font-medium leading-snug sm:text-lg lg:text-xl">
                 {opt.label}
               </span>
               {showStateIcon && (
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500 sm:h-6 sm:w-6" />
               )}
               {isPicked && !opt.correct && anyCorrect && (
-                <X className="mt-0.5 h-5 w-5 shrink-0 text-rose-500" />
+                <X className="mt-0.5 h-5 w-5 shrink-0 text-rose-500 sm:h-6 sm:w-6" />
               )}
             </button>
           )
@@ -424,16 +456,18 @@ function ChoiceCardView({
       </div>
 
       {picked && (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4 sm:space-y-6">
           <div
             className={cn(
-              'rounded-xl border p-5',
+              'rounded-xl border p-5 sm:p-7',
               anyCorrect && picked.correct && 'border-emerald-500/30 bg-emerald-500/5',
               anyCorrect && !picked.correct && 'border-rose-500/30 bg-rose-500/5',
               !anyCorrect && 'border-primary/30 bg-primary/5'
             )}
           >
-            <Prose content={picked.feedback} />
+            <div className="text-base leading-relaxed sm:text-lg">
+              <Prose content={picked.feedback} />
+            </div>
           </div>
           <div className="flex justify-center">
             <NextButton onClick={onNext} />
@@ -466,11 +500,11 @@ function MCQCardView({
 
   return (
     <CardShell>
-      <div className="text-center text-xl font-semibold leading-snug sm:text-2xl">
+      <div className="text-center text-xl font-semibold leading-snug sm:text-3xl lg:text-4xl lg:leading-snug">
         <Prose content={card.question} />
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 sm:space-y-4">
         {card.options.map((opt, idx) => {
           const isPicked = picked === opt.id
           const isAnswer = picked && opt.id === card.correctOptionId
@@ -481,7 +515,7 @@ function MCQCardView({
               onClick={() => handlePick(opt.id)}
               disabled={!!picked}
               className={cn(
-                'group flex w-full items-start gap-3 rounded-xl border bg-card/60 p-4 text-left transition-all',
+                'group flex w-full items-start gap-3 rounded-xl border bg-card/60 p-4 text-left transition-all sm:gap-4 sm:p-5 lg:p-6',
                 !picked && 'hover:-translate-y-0.5 hover:border-primary/40 hover:bg-card',
                 isAnswer && 'border-emerald-500/60 bg-emerald-500/10',
                 isPicked && !correct && 'border-rose-500/60 bg-rose-500/10',
@@ -489,17 +523,17 @@ function MCQCardView({
                 'border-border/60'
               )}
             >
-              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary font-mono text-xs">
+              <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary font-mono text-xs sm:h-8 sm:w-8 sm:text-sm">
                 {String.fromCharCode(65 + idx)}
               </span>
-              <span className="flex-1 text-sm font-medium leading-snug sm:text-base">
+              <span className="flex-1 text-base font-medium leading-snug sm:text-lg lg:text-xl">
                 {opt.label}
               </span>
               {isAnswer && (
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500 sm:h-6 sm:w-6" />
               )}
               {isPicked && !correct && (
-                <X className="mt-0.5 h-5 w-5 shrink-0 text-rose-500" />
+                <X className="mt-0.5 h-5 w-5 shrink-0 text-rose-500 sm:h-6 sm:w-6" />
               )}
             </button>
           )
@@ -507,19 +541,21 @@ function MCQCardView({
       </div>
 
       {picked && (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4 sm:space-y-6">
           <div
             className={cn(
-              'rounded-xl border p-5',
+              'rounded-xl border p-5 sm:p-7',
               correct
                 ? 'border-emerald-500/30 bg-emerald-500/5'
                 : 'border-rose-500/30 bg-rose-500/5'
             )}
           >
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider sm:text-sm">
               {correct ? '✅ 答对了' : '🤔 别灰心 — 真正的答案是：'}
             </p>
-            <Prose content={card.explanation} />
+            <div className="text-base leading-relaxed sm:text-lg">
+              <Prose content={card.explanation} />
+            </div>
           </div>
           <div className="flex justify-center">
             <NextButton onClick={onNext} />
@@ -583,12 +619,12 @@ function MatchCardView({
 
   return (
     <CardShell>
-      <div className="text-center text-xl font-semibold leading-snug sm:text-2xl">
+      <div className="text-center text-xl font-semibold leading-snug sm:text-3xl lg:text-4xl">
         <Prose content={card.prompt} />
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4">
-        <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-3 sm:gap-5">
+        <div className="space-y-2 sm:space-y-3">
           {card.pairs.map((pair, leftIdx) => {
             const matched = leftIdx in matches
             const selected = selectedLeft === leftIdx
@@ -600,7 +636,7 @@ function MatchCardView({
                 onClick={() => handleLeftClick(leftIdx)}
                 disabled={matched}
                 className={cn(
-                  'flex w-full items-center rounded-lg border p-3 text-left text-sm font-medium transition-all sm:text-base',
+                  'flex w-full items-center rounded-lg border p-3 text-left text-base font-medium transition-all sm:p-5 sm:text-lg lg:text-xl',
                   matched && 'border-emerald-500/60 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
                   !matched && selected && 'border-primary bg-primary/15 shadow-md shadow-primary/20',
                   !matched && !selected && 'border-border/60 bg-card/60 hover:border-primary/40',
@@ -613,7 +649,7 @@ function MatchCardView({
           })}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 sm:space-y-3">
           {shuffledRights.map((right) => {
             const matched = Object.values(matches).includes(right.originalIdx)
             const wrongHere = wrongFlash?.right === right.originalIdx
@@ -624,7 +660,7 @@ function MatchCardView({
                 onClick={() => handleRightClick(right.originalIdx)}
                 disabled={matched || selectedLeft === null}
                 className={cn(
-                  'flex w-full items-center rounded-lg border p-3 text-left text-sm transition-all sm:text-base',
+                  'flex w-full items-center rounded-lg border p-3 text-left text-base transition-all sm:p-5 sm:text-lg',
                   matched && 'border-emerald-500/60 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
                   !matched && selectedLeft !== null && 'border-border/60 bg-card/80 hover:border-primary/50 hover:-translate-y-0.5',
                   !matched && selectedLeft === null && 'border-border/40 bg-card/40 text-muted-foreground',
@@ -639,10 +675,12 @@ function MatchCardView({
       </div>
 
       {allMatched && (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-3">
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-5 text-center">
-            <p className="text-base font-semibold">✨ 三对全配出来了</p>
-            <p className="mt-1 text-sm text-muted-foreground">这三个词后面会反复出现，记住它们值。</p>
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4 sm:space-y-6">
+          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-5 text-center sm:p-7">
+            <p className="text-lg font-semibold sm:text-xl">✨ 三对全配出来了</p>
+            <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+              这三个词后面会反复出现，记住它们值。
+            </p>
           </div>
           <div className="flex justify-center">
             <NextButton onClick={onNext} />
@@ -664,19 +702,25 @@ function VizCardView({
   return (
     <CardShell>
       {card.title && (
-        <h2 className="text-center text-2xl font-bold sm:text-3xl">{card.title}</h2>
+        <h2 className="text-center text-2xl font-bold sm:text-4xl lg:text-5xl">
+          {card.title}
+        </h2>
       )}
       {card.body && (
-        <div className="mx-auto max-w-xl text-center text-base text-muted-foreground sm:text-lg">
+        <div className="mx-auto max-w-2xl text-center text-base text-muted-foreground sm:text-lg lg:text-xl">
           <Prose content={card.body} />
         </div>
       )}
-      {card.mermaid && <Mermaid source={card.mermaid} caption={card.caption} />}
+      {card.mermaid && (
+        <div className="text-lg sm:text-xl">
+          <Mermaid source={card.mermaid} caption={card.caption} />
+        </div>
+      )}
       {card.imageSrc && (
         <figure className="overflow-hidden rounded-xl border border-border/60 bg-card/40">
           <img src={card.imageSrc} alt={card.imageAlt ?? ''} className="w-full" />
           {card.caption && (
-            <figcaption className="border-t border-border/40 bg-background/40 px-4 py-2 text-xs text-muted-foreground">
+            <figcaption className="border-t border-border/40 bg-background/40 px-4 py-2 text-xs text-muted-foreground sm:px-6 sm:py-3 sm:text-sm">
               {card.caption}
             </figcaption>
           )}
@@ -726,11 +770,11 @@ function NumericCardView({
 
   return (
     <CardShell>
-      <div className="text-center text-xl font-semibold leading-snug sm:text-2xl">
+      <div className="text-center text-xl font-semibold leading-snug sm:text-3xl lg:text-4xl lg:leading-snug">
         <Prose content={card.question} />
       </div>
 
-      <div className="mx-auto flex max-w-sm items-center gap-2">
+      <div className="mx-auto flex max-w-md items-center gap-3">
         <Input
           ref={inputRef}
           inputMode="numeric"
@@ -740,47 +784,58 @@ function NumericCardView({
             if (e.key === 'Enter') submit()
           }}
           disabled={submitted}
-          placeholder="在这里输入数字"
-          className="h-12 text-center text-lg"
+          placeholder="输入数字"
+          className="h-14 text-center text-xl sm:h-16 sm:text-2xl"
         />
-        {card.unit && <span className="text-sm text-muted-foreground">{card.unit}</span>}
+        {card.unit && (
+          <span className="text-base text-muted-foreground sm:text-lg">{card.unit}</span>
+        )}
       </div>
 
       {!submitted ? (
-        <div className="flex flex-col items-center gap-3">
-          <Button onClick={submit} disabled={!value} size="lg" className="glow-primary px-8">
-            <Check className="mr-1 h-4 w-4" />
+        <div className="flex flex-col items-center gap-3 sm:gap-4">
+          <Button
+            onClick={submit}
+            disabled={!value}
+            size="lg"
+            className="glow-primary h-12 px-8 text-base sm:h-14 sm:px-12 sm:text-lg"
+          >
+            <Check className="mr-1 h-4 w-4 sm:h-5 sm:w-5" />
             提交答案
           </Button>
           {card.hint && (
             <button
               type="button"
               onClick={() => setShowHint((s) => !s)}
-              className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+              className="text-xs text-muted-foreground hover:text-foreground hover:underline sm:text-sm"
             >
               {showHint ? '收起提示' : '想不出来？看一下提示'}
             </button>
           )}
           {showHint && card.hint && (
-            <div className="max-w-md rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-3 text-sm text-yellow-700 dark:text-yellow-300">
+            <div className="max-w-lg rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-4 text-sm text-yellow-700 dark:text-yellow-300 sm:p-5 sm:text-base">
               💡 {card.hint}
             </div>
           )}
         </div>
       ) : (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4 sm:space-y-6">
           <div
             className={cn(
-              'rounded-xl border p-5',
+              'rounded-xl border p-5 sm:p-7',
               correct
                 ? 'border-emerald-500/30 bg-emerald-500/5'
                 : 'border-rose-500/30 bg-rose-500/5'
             )}
           >
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider">
-              {correct ? '✅ 答对了' : `❌ 你写了 ${value}，正确答案是 ${card.answer}${card.unit ?? ''}`}
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider sm:text-sm">
+              {correct
+                ? '✅ 答对了'
+                : `❌ 你写了 ${value}，正确答案是 ${card.answer}${card.unit ?? ''}`}
             </p>
-            <Prose content={card.explanation} />
+            <div className="text-base leading-relaxed sm:text-lg">
+              <Prose content={card.explanation} />
+            </div>
           </div>
           <div className="flex justify-center">
             <NextButton onClick={onNext} />
@@ -801,12 +856,12 @@ function RecapCardView({
 }: { card: RecapCard } & CardCallbacks) {
   return (
     <CardShell>
-      <h2 className="text-center text-2xl font-bold sm:text-3xl">{card.title}</h2>
-      <ul className="space-y-3">
+      <h2 className="text-center text-2xl font-bold sm:text-4xl lg:text-5xl">{card.title}</h2>
+      <ul className="space-y-3 sm:space-y-4">
         {card.bullets.map((b, i) => (
           <li
             key={i}
-            className="animate-in fade-in slide-in-from-left-2 fill-mode-both rounded-lg border border-border/60 bg-card/40 p-4 text-sm leading-relaxed sm:text-base"
+            className="animate-in fade-in slide-in-from-left-2 fill-mode-both rounded-lg border border-border/60 bg-card/40 p-4 text-base leading-relaxed sm:p-6 sm:text-lg lg:text-xl"
             style={{ animationDelay: `${i * 100}ms`, animationDuration: '400ms' }}
           >
             <Prose content={b} size="md" />
@@ -837,35 +892,50 @@ function CompletionCardView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Chapter id for the article jump (we don't store it on the card, but
+  // nextChapterId - 1 == current chapter id).
+  const currentChapterId = card.nextChapterId ? card.nextChapterId - 1 : 1
   return (
     <CardShell>
-      <div className="text-center text-7xl sm:text-8xl">🏆</div>
-      <h1 className="text-center text-3xl font-bold sm:text-4xl">{card.title}</h1>
-      <div className="mx-auto max-w-xl text-center text-base text-muted-foreground sm:text-lg">
+      <div className="text-center text-7xl sm:text-9xl">🏆</div>
+      <h1 className="text-center text-3xl font-bold sm:text-5xl lg:text-6xl">
+        {card.title}
+      </h1>
+      <div className="mx-auto max-w-2xl text-center text-base text-muted-foreground sm:text-xl lg:text-2xl lg:leading-snug">
         <Prose content={card.body} />
       </div>
-      <div className="flex flex-col items-center justify-center gap-3 pt-4 sm:flex-row">
+      <div className="grid gap-3 sm:grid-cols-3">
         {card.nextChapterId && (
-          <Button asChild size="lg" className="glow-primary h-12 px-8">
+          <Button
+            asChild
+            size="lg"
+            className="glow-primary h-14 px-4 text-base sm:h-16 sm:text-lg"
+          >
             <Link href={`/learn/${card.nextChapterId}/play`}>
-              开始第 {card.nextChapterId} 课
+              🎮 第 {card.nextChapterId} 课
               <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>
         )}
-        <Button asChild size="lg" variant="outline" className="h-12 px-8">
+        <Button
+          asChild
+          size="lg"
+          variant="outline"
+          className="h-14 px-4 text-base sm:h-16 sm:text-lg"
+        >
+          <Link href={`/learn/${currentChapterId}`}>
+            <BookOpen className="mr-1 h-4 w-4" />
+            看本章文档
+          </Link>
+        </Button>
+        <Button
+          asChild
+          size="lg"
+          variant="ghost"
+          className="h-14 px-4 text-base sm:h-16 sm:text-lg"
+        >
           <Link href="/learn">回到学习路径</Link>
         </Button>
-      </div>
-      <div className="flex justify-center pt-2 text-xs text-muted-foreground">
-        想看本课的深度文档？{' '}
-        <Link
-          href={`/learn/${card.nextChapterId ? card.nextChapterId - 1 : 1}`}
-          className="ml-1 inline-flex items-center gap-0.5 text-primary hover:underline"
-        >
-          <BookOpen className="h-3 w-3" />
-          完整章节
-        </Link>
       </div>
     </CardShell>
   )

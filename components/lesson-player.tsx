@@ -1,0 +1,872 @@
+'use client'
+
+/**
+ * Interactive lesson player.
+ *
+ * Renders a Lesson as a sequence of single-screen cards. Reads exactly like
+ * Duolingo / Brilliant: one new idea per card, click to advance, immediate
+ * feedback on every interaction.
+ *
+ * Why all card types live in one file:
+ *   They share a lot of helpers (CardShell, Prose wrapper, NextButton, the
+ *   confetti hook). Splitting into 9 files would 3x the import noise without
+ *   improving readability — each card view is ~30 LOC.
+ */
+
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import Link from 'next/link'
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Check,
+  CheckCircle2,
+  ChevronRight,
+  X
+} from 'lucide-react'
+import { toast } from 'sonner'
+import { Prose } from '@/components/prose'
+import { Mermaid } from '@/components/mermaid'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { useProgress } from '@/lib/use-progress'
+import { cn } from '@/lib/utils'
+import type {
+  Card,
+  ChoiceCard,
+  ChoiceOption,
+  CompletionCard,
+  IntroCard,
+  Lesson,
+  MCQCard,
+  MatchCard,
+  NumericCard,
+  RecapCard,
+  RevealCard,
+  VizCard
+} from '@/lib/lesson-types'
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Confetti — pure CSS particles, no library                              */
+/* ────────────────────────────────────────────────────────────────────── */
+
+function Confetti() {
+  const symbols = ['🎉', '✨', '🎊', '⭐', '💫', '🌟', '🎈']
+  const items = useMemo(
+    () =>
+      Array.from({ length: 28 }, (_, i) => ({
+        s: symbols[i % symbols.length],
+        dx: (Math.random() - 0.5) * 800,
+        dy: -200 - Math.random() * 400,
+        rot: (Math.random() - 0.5) * 720,
+        delay: i * 18,
+        dur: 1200 + Math.random() * 600
+      })),
+    []
+  )
+
+  return (
+    <>
+      <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
+        {items.map((p, i) => (
+          <span
+            key={i}
+            className="absolute left-1/2 top-1/2 text-3xl will-change-transform"
+            style={{
+              ['--dx' as string]: `${p.dx}px`,
+              ['--dy' as string]: `${p.dy}px`,
+              ['--rot' as string]: `${p.rot}deg`,
+              animation: `confetti-burst ${p.dur}ms cubic-bezier(.18,.65,.55,1) ${p.delay}ms forwards`
+            }}
+          >
+            {p.s}
+          </span>
+        ))}
+      </div>
+      <style>{`
+        @keyframes confetti-burst {
+          0%   { transform: translate(-50%, -50%) rotate(0deg); opacity: 1; }
+          70%  { opacity: 1; }
+          100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy) + 600px)) rotate(var(--rot)); opacity: 0; }
+        }
+      `}</style>
+    </>
+  )
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Top-level player                                                        */
+/* ────────────────────────────────────────────────────────────────────── */
+
+interface LessonPlayerProps {
+  lesson: Lesson
+}
+
+export function LessonPlayer({ lesson }: LessonPlayerProps) {
+  const [index, setIndex] = useState(0)
+  const [streak, setStreak] = useState(0)
+  const [confettiKey, setConfettiKey] = useState(0)
+  const { markCompleted } = useProgress()
+
+  const total = lesson.cards.length
+  const card = lesson.cards[index]
+  const isLast = index === total - 1
+  const progress = ((index + 1) / total) * 100
+
+  const triggerConfetti = useCallback(() => {
+    setConfettiKey((k) => k + 1)
+  }, [])
+
+  const next = useCallback(() => {
+    if (index < total - 1) {
+      setIndex((i) => i + 1)
+      window.scrollTo({ top: 0, behavior: 'instant' })
+    } else {
+      markCompleted(lesson.chapterId)
+      toast.success('🎉 这一课已完成')
+    }
+  }, [index, total, markCompleted, lesson.chapterId])
+
+  const prev = useCallback(() => {
+    if (index > 0) {
+      setIndex((i) => i - 1)
+      window.scrollTo({ top: 0, behavior: 'instant' })
+    }
+  }, [index])
+
+  const onCorrect = useCallback(() => {
+    setStreak((s) => s + 1)
+    triggerConfetti()
+  }, [triggerConfetti])
+
+  const onWrong = useCallback(() => {
+    setStreak(0)
+  }, [])
+
+  // Keyboard nav: Enter / → to advance, ← to go back (when not in input).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement
+      if (target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA') return
+      if (e.key === 'ArrowLeft') prev()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [prev])
+
+  return (
+    <div className="flex min-h-screen flex-col bg-background">
+      {/* Top bar: progress + escape */}
+      <header className="sticky top-0 z-30 border-b border-border/40 bg-background/80 backdrop-blur">
+        <div className="mx-auto flex max-w-3xl items-center gap-4 px-4 py-3 sm:px-6">
+          <Link
+            href={`/learn/${lesson.chapterId}`}
+            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            aria-label="退出本课"
+          >
+            <X className="h-4 w-4" />
+          </Link>
+
+          <div className="flex-1">
+            <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <div className="mt-1 flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
+              <span>
+                第 {lesson.chapterId} 课 · {index + 1} / {total}
+              </span>
+              {streak >= 2 && (
+                <span className="inline-flex items-center gap-0.5 text-orange-500">
+                  🔥 {streak} 连对
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex flex-1 items-start justify-center px-4 py-8 sm:py-12">
+        <div key={card.id} className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <CardSwitch
+            card={card}
+            isLast={isLast}
+            onNext={next}
+            onCorrect={onCorrect}
+            onWrong={onWrong}
+          />
+        </div>
+      </main>
+
+      <footer className="border-t border-border/40 bg-background/60 backdrop-blur">
+        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3 sm:px-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={prev}
+            disabled={index === 0}
+            className="text-xs text-muted-foreground"
+          >
+            <ArrowLeft className="mr-1 h-3.5 w-3.5" />
+            上一卡
+          </Button>
+          <p className="hidden text-[10px] text-muted-foreground sm:block">
+            ← / → 翻卡 · Esc 退出
+          </p>
+          <Link
+            href={`/learn/${lesson.chapterId}`}
+            className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <BookOpen className="h-3.5 w-3.5" />
+            查看文档
+          </Link>
+        </div>
+      </footer>
+
+      {confettiKey > 0 && <Confetti key={confettiKey} />}
+    </div>
+  )
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Card switch                                                             */
+/* ────────────────────────────────────────────────────────────────────── */
+
+interface CardCallbacks {
+  isLast: boolean
+  onNext: () => void
+  onCorrect: () => void
+  onWrong: () => void
+}
+
+function CardSwitch({ card, ...cb }: { card: Card } & CardCallbacks) {
+  switch (card.type) {
+    case 'intro':
+      return <IntroCardView card={card} {...cb} />
+    case 'reveal':
+      return <RevealCardView card={card} {...cb} />
+    case 'choice':
+      return <ChoiceCardView card={card} {...cb} />
+    case 'mcq':
+      return <MCQCardView card={card} {...cb} />
+    case 'match':
+      return <MatchCardView card={card} {...cb} />
+    case 'viz':
+      return <VizCardView card={card} {...cb} />
+    case 'numeric':
+      return <NumericCardView card={card} {...cb} />
+    case 'recap':
+      return <RecapCardView card={card} {...cb} />
+    case 'completion':
+      return <CompletionCardView card={card} {...cb} />
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Shared bits                                                             */
+/* ────────────────────────────────────────────────────────────────────── */
+
+function NextButton({
+  onClick,
+  label = '继续',
+  size = 'lg',
+  variant = 'default'
+}: {
+  onClick: () => void
+  label?: string
+  size?: 'sm' | 'lg'
+  variant?: 'default' | 'outline'
+}) {
+  return (
+    <Button
+      onClick={onClick}
+      size={size}
+      variant={variant}
+      className={cn(
+        'group h-12 px-8 text-base',
+        variant === 'default' && 'glow-primary'
+      )}
+    >
+      {label}
+      <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+    </Button>
+  )
+}
+
+function CardShell({ children }: { children: React.ReactNode }) {
+  return <div className="space-y-6">{children}</div>
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Intro                                                                   */
+/* ────────────────────────────────────────────────────────────────────── */
+
+function IntroCardView({
+  card,
+  onNext
+}: { card: IntroCard } & CardCallbacks) {
+  return (
+    <CardShell>
+      {card.emoji && (
+        <div className="text-center text-6xl sm:text-7xl">{card.emoji}</div>
+      )}
+      {card.title && (
+        <h1 className="text-center text-3xl font-bold sm:text-4xl">
+          {card.title}
+        </h1>
+      )}
+      <div className="mx-auto max-w-xl text-center text-lg leading-relaxed text-muted-foreground sm:text-xl">
+        <Prose content={card.body} size="md" />
+      </div>
+      <div className="flex justify-center pt-2">
+        <NextButton onClick={onNext} label={card.cta ?? '继续'} />
+      </div>
+    </CardShell>
+  )
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Reveal                                                                  */
+/* ────────────────────────────────────────────────────────────────────── */
+
+function RevealCardView({
+  card,
+  onNext
+}: { card: RevealCard } & CardCallbacks) {
+  const [revealed, setRevealed] = useState(false)
+  return (
+    <CardShell>
+      <div className="mx-auto max-w-xl text-center text-lg leading-relaxed sm:text-xl">
+        <Prose content={card.prompt} size="md" />
+      </div>
+
+      {!revealed ? (
+        <div className="flex justify-center">
+          <NextButton onClick={() => setRevealed(true)} label={card.revealCta} />
+        </div>
+      ) : (
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 space-y-6">
+          <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 p-6 sm:p-8">
+            <Prose content={card.reveal} />
+          </div>
+          <div className="flex justify-center">
+            <NextButton onClick={onNext} label={card.followCta ?? '继续'} />
+          </div>
+        </div>
+      )}
+    </CardShell>
+  )
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Choice (soft branching, any answer can proceed)                         */
+/* ────────────────────────────────────────────────────────────────────── */
+
+function ChoiceCardView({
+  card,
+  onNext,
+  onCorrect,
+  onWrong
+}: { card: ChoiceCard } & CardCallbacks) {
+  const [picked, setPicked] = useState<ChoiceOption | null>(null)
+  const anyCorrect = card.options.some((o) => o.correct)
+
+  const handlePick = (opt: ChoiceOption) => {
+    if (picked) return
+    setPicked(opt)
+    if (anyCorrect) {
+      if (opt.correct) onCorrect()
+      else onWrong()
+    }
+  }
+
+  return (
+    <CardShell>
+      <div className="text-center text-xl font-semibold leading-snug sm:text-2xl">
+        <Prose content={card.question} />
+      </div>
+
+      <div className="space-y-3">
+        {card.options.map((opt) => {
+          const isPicked = picked?.id === opt.id
+          const showStateIcon = picked && opt.correct
+          return (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => handlePick(opt)}
+              disabled={!!picked}
+              className={cn(
+                'group flex w-full items-start gap-3 rounded-xl border bg-card/60 p-4 text-left transition-all',
+                !picked && 'hover:-translate-y-0.5 hover:border-primary/40 hover:bg-card hover:shadow-md hover:shadow-primary/5',
+                isPicked && opt.correct && 'border-emerald-500/60 bg-emerald-500/10',
+                isPicked && !opt.correct && anyCorrect && 'border-rose-500/60 bg-rose-500/10',
+                isPicked && !anyCorrect && 'border-primary/60 bg-primary/10',
+                !isPicked && picked && 'opacity-40',
+                'border-border/60'
+              )}
+            >
+              {opt.emoji && <span className="text-2xl">{opt.emoji}</span>}
+              <span className="flex-1 text-sm font-medium leading-snug sm:text-base">
+                {opt.label}
+              </span>
+              {showStateIcon && (
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
+              )}
+              {isPicked && !opt.correct && anyCorrect && (
+                <X className="mt-0.5 h-5 w-5 shrink-0 text-rose-500" />
+              )}
+            </button>
+          )
+        })}
+      </div>
+
+      {picked && (
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
+          <div
+            className={cn(
+              'rounded-xl border p-5',
+              anyCorrect && picked.correct && 'border-emerald-500/30 bg-emerald-500/5',
+              anyCorrect && !picked.correct && 'border-rose-500/30 bg-rose-500/5',
+              !anyCorrect && 'border-primary/30 bg-primary/5'
+            )}
+          >
+            <Prose content={picked.feedback} />
+          </div>
+          <div className="flex justify-center">
+            <NextButton onClick={onNext} />
+          </div>
+        </div>
+      )}
+    </CardShell>
+  )
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* MCQ (must pick correct to proceed efficiently, but soft on retry)       */
+/* ────────────────────────────────────────────────────────────────────── */
+
+function MCQCardView({
+  card,
+  onNext,
+  onCorrect,
+  onWrong
+}: { card: MCQCard } & CardCallbacks) {
+  const [picked, setPicked] = useState<string | null>(null)
+  const correct = picked === card.correctOptionId
+
+  const handlePick = (id: string) => {
+    if (picked) return
+    setPicked(id)
+    if (id === card.correctOptionId) onCorrect()
+    else onWrong()
+  }
+
+  return (
+    <CardShell>
+      <div className="text-center text-xl font-semibold leading-snug sm:text-2xl">
+        <Prose content={card.question} />
+      </div>
+
+      <div className="space-y-3">
+        {card.options.map((opt, idx) => {
+          const isPicked = picked === opt.id
+          const isAnswer = picked && opt.id === card.correctOptionId
+          return (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => handlePick(opt.id)}
+              disabled={!!picked}
+              className={cn(
+                'group flex w-full items-start gap-3 rounded-xl border bg-card/60 p-4 text-left transition-all',
+                !picked && 'hover:-translate-y-0.5 hover:border-primary/40 hover:bg-card',
+                isAnswer && 'border-emerald-500/60 bg-emerald-500/10',
+                isPicked && !correct && 'border-rose-500/60 bg-rose-500/10',
+                !isPicked && picked && !isAnswer && 'opacity-40',
+                'border-border/60'
+              )}
+            >
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary font-mono text-xs">
+                {String.fromCharCode(65 + idx)}
+              </span>
+              <span className="flex-1 text-sm font-medium leading-snug sm:text-base">
+                {opt.label}
+              </span>
+              {isAnswer && (
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
+              )}
+              {isPicked && !correct && (
+                <X className="mt-0.5 h-5 w-5 shrink-0 text-rose-500" />
+              )}
+            </button>
+          )
+        })}
+      </div>
+
+      {picked && (
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
+          <div
+            className={cn(
+              'rounded-xl border p-5',
+              correct
+                ? 'border-emerald-500/30 bg-emerald-500/5'
+                : 'border-rose-500/30 bg-rose-500/5'
+            )}
+          >
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider">
+              {correct ? '✅ 答对了' : '🤔 别灰心 — 真正的答案是：'}
+            </p>
+            <Prose content={card.explanation} />
+          </div>
+          <div className="flex justify-center">
+            <NextButton onClick={onNext} />
+          </div>
+        </div>
+      )}
+    </CardShell>
+  )
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Match — click left, then click right to pair                            */
+/* ────────────────────────────────────────────────────────────────────── */
+
+function MatchCardView({
+  card,
+  onNext,
+  onCorrect
+}: { card: MatchCard } & CardCallbacks) {
+  // Shuffled right column. Generate once.
+  const shuffledRights = useMemo(() => {
+    const arr = card.pairs.map((p, i) => ({ value: p.right, originalIdx: i }))
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[arr[i], arr[j]] = [arr[j], arr[i]]
+    }
+    return arr
+  }, [card.pairs])
+
+  const [selectedLeft, setSelectedLeft] = useState<number | null>(null)
+  const [matches, setMatches] = useState<Record<number, number>>({}) // left idx -> right originalIdx
+  const [wrongFlash, setWrongFlash] = useState<{ left: number; right: number } | null>(null)
+  const triggeredCelebration = useRef(false)
+
+  const allMatched = Object.keys(matches).length === card.pairs.length
+
+  useEffect(() => {
+    if (allMatched && !triggeredCelebration.current) {
+      triggeredCelebration.current = true
+      onCorrect()
+    }
+  }, [allMatched, onCorrect])
+
+  const handleLeftClick = (idx: number) => {
+    if (idx in matches) return
+    setSelectedLeft(idx)
+  }
+
+  const handleRightClick = (originalIdx: number) => {
+    if (selectedLeft === null) return
+    if (Object.values(matches).includes(originalIdx)) return
+    if (selectedLeft === originalIdx) {
+      setMatches((m) => ({ ...m, [selectedLeft]: originalIdx }))
+      setSelectedLeft(null)
+    } else {
+      setWrongFlash({ left: selectedLeft, right: originalIdx })
+      setTimeout(() => setWrongFlash(null), 600)
+      setSelectedLeft(null)
+    }
+  }
+
+  return (
+    <CardShell>
+      <div className="text-center text-xl font-semibold leading-snug sm:text-2xl">
+        <Prose content={card.prompt} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        <div className="space-y-2">
+          {card.pairs.map((pair, leftIdx) => {
+            const matched = leftIdx in matches
+            const selected = selectedLeft === leftIdx
+            const wrongHere = wrongFlash?.left === leftIdx
+            return (
+              <button
+                key={leftIdx}
+                type="button"
+                onClick={() => handleLeftClick(leftIdx)}
+                disabled={matched}
+                className={cn(
+                  'flex w-full items-center rounded-lg border p-3 text-left text-sm font-medium transition-all sm:text-base',
+                  matched && 'border-emerald-500/60 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+                  !matched && selected && 'border-primary bg-primary/15 shadow-md shadow-primary/20',
+                  !matched && !selected && 'border-border/60 bg-card/60 hover:border-primary/40',
+                  wrongHere && 'animate-pulse border-rose-500 bg-rose-500/10'
+                )}
+              >
+                {pair.left}
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="space-y-2">
+          {shuffledRights.map((right) => {
+            const matched = Object.values(matches).includes(right.originalIdx)
+            const wrongHere = wrongFlash?.right === right.originalIdx
+            return (
+              <button
+                key={right.originalIdx}
+                type="button"
+                onClick={() => handleRightClick(right.originalIdx)}
+                disabled={matched || selectedLeft === null}
+                className={cn(
+                  'flex w-full items-center rounded-lg border p-3 text-left text-sm transition-all sm:text-base',
+                  matched && 'border-emerald-500/60 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+                  !matched && selectedLeft !== null && 'border-border/60 bg-card/80 hover:border-primary/50 hover:-translate-y-0.5',
+                  !matched && selectedLeft === null && 'border-border/40 bg-card/40 text-muted-foreground',
+                  wrongHere && 'animate-pulse border-rose-500 bg-rose-500/10'
+                )}
+              >
+                {right.value}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {allMatched && (
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-3">
+          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-5 text-center">
+            <p className="text-base font-semibold">✨ 三对全配出来了</p>
+            <p className="mt-1 text-sm text-muted-foreground">这三个词后面会反复出现，记住它们值。</p>
+          </div>
+          <div className="flex justify-center">
+            <NextButton onClick={onNext} />
+          </div>
+        </div>
+      )}
+    </CardShell>
+  )
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Viz — Mermaid or image                                                  */
+/* ────────────────────────────────────────────────────────────────────── */
+
+function VizCardView({
+  card,
+  onNext
+}: { card: VizCard } & CardCallbacks) {
+  return (
+    <CardShell>
+      {card.title && (
+        <h2 className="text-center text-2xl font-bold sm:text-3xl">{card.title}</h2>
+      )}
+      {card.body && (
+        <div className="mx-auto max-w-xl text-center text-base text-muted-foreground sm:text-lg">
+          <Prose content={card.body} />
+        </div>
+      )}
+      {card.mermaid && <Mermaid source={card.mermaid} caption={card.caption} />}
+      {card.imageSrc && (
+        <figure className="overflow-hidden rounded-xl border border-border/60 bg-card/40">
+          <img src={card.imageSrc} alt={card.imageAlt ?? ''} className="w-full" />
+          {card.caption && (
+            <figcaption className="border-t border-border/40 bg-background/40 px-4 py-2 text-xs text-muted-foreground">
+              {card.caption}
+            </figcaption>
+          )}
+        </figure>
+      )}
+      <div className="flex justify-center">
+        <NextButton onClick={onNext} label="懂了 →" />
+      </div>
+    </CardShell>
+  )
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Numeric                                                                 */
+/* ────────────────────────────────────────────────────────────────────── */
+
+function NumericCardView({
+  card,
+  onNext,
+  onCorrect,
+  onWrong
+}: { card: NumericCard } & CardCallbacks) {
+  const [value, setValue] = useState('')
+  const [showHint, setShowHint] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [correct, setCorrect] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
+  const submit = () => {
+    if (submitted || !value) return
+    const num = parseFloat(value)
+    if (Number.isNaN(num)) {
+      toast.error('请输入一个数字')
+      return
+    }
+    const tol = card.tolerance ?? 0
+    const ok = Math.abs(num - card.answer) <= tol
+    setCorrect(ok)
+    setSubmitted(true)
+    if (ok) onCorrect()
+    else onWrong()
+  }
+
+  return (
+    <CardShell>
+      <div className="text-center text-xl font-semibold leading-snug sm:text-2xl">
+        <Prose content={card.question} />
+      </div>
+
+      <div className="mx-auto flex max-w-sm items-center gap-2">
+        <Input
+          ref={inputRef}
+          inputMode="numeric"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') submit()
+          }}
+          disabled={submitted}
+          placeholder="在这里输入数字"
+          className="h-12 text-center text-lg"
+        />
+        {card.unit && <span className="text-sm text-muted-foreground">{card.unit}</span>}
+      </div>
+
+      {!submitted ? (
+        <div className="flex flex-col items-center gap-3">
+          <Button onClick={submit} disabled={!value} size="lg" className="glow-primary px-8">
+            <Check className="mr-1 h-4 w-4" />
+            提交答案
+          </Button>
+          {card.hint && (
+            <button
+              type="button"
+              onClick={() => setShowHint((s) => !s)}
+              className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+            >
+              {showHint ? '收起提示' : '想不出来？看一下提示'}
+            </button>
+          )}
+          {showHint && card.hint && (
+            <div className="max-w-md rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-3 text-sm text-yellow-700 dark:text-yellow-300">
+              💡 {card.hint}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
+          <div
+            className={cn(
+              'rounded-xl border p-5',
+              correct
+                ? 'border-emerald-500/30 bg-emerald-500/5'
+                : 'border-rose-500/30 bg-rose-500/5'
+            )}
+          >
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider">
+              {correct ? '✅ 答对了' : `❌ 你写了 ${value}，正确答案是 ${card.answer}${card.unit ?? ''}`}
+            </p>
+            <Prose content={card.explanation} />
+          </div>
+          <div className="flex justify-center">
+            <NextButton onClick={onNext} />
+          </div>
+        </div>
+      )}
+    </CardShell>
+  )
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Recap                                                                   */
+/* ────────────────────────────────────────────────────────────────────── */
+
+function RecapCardView({
+  card,
+  onNext
+}: { card: RecapCard } & CardCallbacks) {
+  return (
+    <CardShell>
+      <h2 className="text-center text-2xl font-bold sm:text-3xl">{card.title}</h2>
+      <ul className="space-y-3">
+        {card.bullets.map((b, i) => (
+          <li
+            key={i}
+            className="animate-in fade-in slide-in-from-left-2 fill-mode-both rounded-lg border border-border/60 bg-card/40 p-4 text-sm leading-relaxed sm:text-base"
+            style={{ animationDelay: `${i * 100}ms`, animationDuration: '400ms' }}
+          >
+            <Prose content={b} size="md" />
+          </li>
+        ))}
+      </ul>
+      <div className="flex justify-center pt-2">
+        <NextButton onClick={onNext} label="完成本课 →" />
+      </div>
+    </CardShell>
+  )
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Completion                                                              */
+/* ────────────────────────────────────────────────────────────────────── */
+
+function CompletionCardView({
+  card,
+  onNext
+}: { card: CompletionCard } & CardCallbacks) {
+  const triggeredRef = useRef(false)
+
+  useEffect(() => {
+    if (triggeredRef.current) return
+    triggeredRef.current = true
+    onNext() // marks chapter completed in useProgress + toast
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return (
+    <CardShell>
+      <div className="text-center text-7xl sm:text-8xl">🏆</div>
+      <h1 className="text-center text-3xl font-bold sm:text-4xl">{card.title}</h1>
+      <div className="mx-auto max-w-xl text-center text-base text-muted-foreground sm:text-lg">
+        <Prose content={card.body} />
+      </div>
+      <div className="flex flex-col items-center justify-center gap-3 pt-4 sm:flex-row">
+        {card.nextChapterId && (
+          <Button asChild size="lg" className="glow-primary h-12 px-8">
+            <Link href={`/learn/${card.nextChapterId}/play`}>
+              开始第 {card.nextChapterId} 课
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </Link>
+          </Button>
+        )}
+        <Button asChild size="lg" variant="outline" className="h-12 px-8">
+          <Link href="/learn">回到学习路径</Link>
+        </Button>
+      </div>
+      <div className="flex justify-center pt-2 text-xs text-muted-foreground">
+        想看本课的深度文档？{' '}
+        <Link
+          href={`/learn/${card.nextChapterId ? card.nextChapterId - 1 : 1}`}
+          className="ml-1 inline-flex items-center gap-0.5 text-primary hover:underline"
+        >
+          <BookOpen className="h-3 w-3" />
+          完整章节
+        </Link>
+      </div>
+    </CardShell>
+  )
+}

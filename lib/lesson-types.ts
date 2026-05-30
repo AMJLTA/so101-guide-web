@@ -18,6 +18,7 @@ export type CardType =
   | 'match'      // pair items (term ↔ definition). Vocabulary.
   | 'viz'        // Mermaid diagram or image with caption. Visual.
   | 'numeric'    // type a number, check against expected. Math/recall.
+  | 'command'    // shell command + expected output + optional tip. Practical.
   | 'recap'      // bullet summary of what was learned. Memory.
   | 'completion' // celebration screen, unlock next chapter.
 
@@ -121,6 +122,26 @@ export interface NumericCard extends BaseCard {
   unit?: string
 }
 
+export interface CommandCard extends BaseCard {
+  type: 'command'
+  /** Title above the code block. */
+  title: string
+  /** Optional intro paragraph (markdown). */
+  intro?: string
+  /** Short description shown above the code. */
+  description: string
+  /** The command to display. */
+  code: string
+  /** Language hint (defaults to "bash"). */
+  language?: string
+  /** Optional "you should see" content shown in a green callout. */
+  expectedOutput?: string
+  /** Optional pro tip in a yellow callout. */
+  tip?: string
+  /** Optional warning in a red callout. */
+  warning?: string
+}
+
 export interface RecapCard extends BaseCard {
   type: 'recap'
   title: string
@@ -143,6 +164,7 @@ export type Card =
   | MatchCard
   | VizCard
   | NumericCard
+  | CommandCard
   | RecapCard
   | CompletionCard
 

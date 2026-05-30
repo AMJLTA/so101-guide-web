@@ -28,6 +28,7 @@ import {
 import { toast } from 'sonner'
 import { Prose } from '@/components/prose'
 import { Mermaid } from '@/components/mermaid'
+import { CodeBlock } from '@/components/code-block'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useProgress } from '@/lib/use-progress'
@@ -36,6 +37,7 @@ import type {
   Card,
   ChoiceCard,
   ChoiceOption,
+  CommandCard,
   CompletionCard,
   IntroCard,
   Lesson,
@@ -285,6 +287,8 @@ function CardSwitch({ card, ...cb }: { card: Card } & CardCallbacks) {
       return <VizCardView card={card} {...cb} />
     case 'numeric':
       return <NumericCardView card={card} {...cb} />
+    case 'command':
+      return <CommandCardView card={card} {...cb} />
     case 'recap':
       return <RecapCardView card={card} {...cb} />
     case 'completion':
@@ -842,6 +846,70 @@ function NumericCardView({
           </div>
         </div>
       )}
+    </CardShell>
+  )
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Command — bash/code block + expected output + tip                       */
+/* ────────────────────────────────────────────────────────────────────── */
+
+function CommandCardView({
+  card,
+  onNext
+}: { card: CommandCard } & CardCallbacks) {
+  return (
+    <CardShell>
+      <h2 className="text-center text-2xl font-bold sm:text-4xl lg:text-5xl">
+        {card.title}
+      </h2>
+      {card.intro && (
+        <div className="mx-auto max-w-2xl text-center text-base text-muted-foreground sm:text-lg lg:text-xl">
+          <Prose content={card.intro} />
+        </div>
+      )}
+      <div className="space-y-4">
+        <p className="text-sm font-medium text-muted-foreground sm:text-base">
+          {card.description}
+        </p>
+        <CodeBlock
+          code={card.code}
+          language={card.language ?? 'bash'}
+        />
+        {card.expectedOutput && (
+          <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4 sm:p-5">
+            <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+              ✨ 你应该看到
+            </p>
+            <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-xs leading-relaxed sm:text-sm">
+              {card.expectedOutput}
+            </pre>
+          </div>
+        )}
+        {card.tip && (
+          <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-4 sm:p-5">
+            <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-yellow-700 dark:text-yellow-300">
+              💡 小提示
+            </p>
+            <div className="text-sm leading-relaxed sm:text-base">
+              <Prose content={card.tip} size="sm" />
+            </div>
+          </div>
+        )}
+        {card.warning && (
+          <div className="rounded-lg border border-rose-500/30 bg-rose-500/5 p-4 sm:p-5">
+            <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-rose-700 dark:text-rose-300">
+              ⚠️ 注意
+            </p>
+            <div className="text-sm leading-relaxed sm:text-base">
+              <Prose content={card.warning} size="sm" />
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="flex justify-center pt-2">
+        <NextButton onClick={onNext} label="懂了 →" />
+      </div>
     </CardShell>
   )
 }

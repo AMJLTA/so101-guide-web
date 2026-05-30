@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import { Heart, MessageCircle, Reply, Send, Trash2 } from 'lucide-react'
@@ -200,15 +201,22 @@ export function Discussion({ threadKey, title = '讨论区', className }: Discus
             const name = c.author_username ?? '匿名'
             return (
               <div key={c.id} className="flex gap-3">
-                <Avatar className="mt-0.5 h-8 w-8 shrink-0">
-                  {c.author_avatar_url && <AvatarImage src={c.author_avatar_url} alt={name} />}
-                  <AvatarFallback className="bg-gradient-to-br from-primary/30 to-accent/30 text-xs">
-                    {name.slice(0, 1).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <Link href={`/u/${name}`} className="shrink-0">
+                  <Avatar className="mt-0.5 h-8 w-8">
+                    {c.author_avatar_url && <AvatarImage src={c.author_avatar_url} alt={name} />}
+                    <AvatarFallback className="bg-gradient-to-br from-primary/30 to-accent/30 text-xs">
+                      {name.slice(0, 1).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold">{name}</span>
+                    <Link
+                      href={`/u/${name}`}
+                      className="text-sm font-semibold hover:text-primary hover:underline"
+                    >
+                      {name}
+                    </Link>
                     <span className="text-xs text-muted-foreground">
                       {formatDistanceToNow(new Date(c.created_at), {
                         addSuffix: true,

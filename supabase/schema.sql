@@ -142,3 +142,73 @@ from public.comments
 group by thread_key;
 
 alter view public.thread_counts set (security_invoker = true);
+
+
+-- 6. 全站最新评论流（给 /community 首页用，附线索 + 作者） --------------
+
+create or replace view public.recent_comments_with_thread as
+select
+  c.id,
+  c.thread_key,
+  c.body,
+  c.created_at,
+  c.author_id,
+  p.username      as author_username,
+  p.avatar_url    as author_avatar_url
+from public.comments c
+join public.profiles p on p.id = c.author_id
+order by c.created_at desc;
+
+alter view public.recent_comments_with_thread set (security_invoker = true);
+
+
+-- 7. 用户贡献统计（给个人主页 + 排行榜用） -------------------------------
+-- 注意：用 left join，刚注册没发过言的用户也有一行（comment_count=0）。
+
+create or replace view public.user_contributions as
+select
+  p.id,
+  p.username,
+  p.avatar_url,
+  p.bio,
+  p.created_at,
+  coalesce(c.comment_count, 0)         as comment_count,
+  coalesce(c.last_comment_at, p.created_at) as last_active_at,
+  coalesce(l.likes_received, 0)        as likes_received
+from public.profiles p
+left join (
+  select author_id,
+         count(*)::int             as comment_count,
+         max(created_at)           as last_comment_at
+  from public.comments
+  group by author_id
+) c on c.author_id = p.id
+left join (
+  select cm.author_id, count(*)::int as likes_received
+  from public.comments cm
+  join public.comment_votes cv on cv.comment_id = cm.id
+  group by cm.author_id
+) l on l.author_id = p.id;
+
+alter view public.user_contributions set (security_invoker = true);
+
+
+-- 8. 单个用户的评论列表（带 thread_key 上下文） --------------------------
+
+create or replace view public.user_comments_with_thread as
+select
+  c.id,
+  c.author_id,
+  c.thread_key,
+  c.body,
+  c.created_at,
+  coalesce(v.cnt, 0) as like_count
+from public.comments c
+left join (
+  select comment_id, count(*)::int as cnt
+  from public.comment_votes
+  group by comment_id
+) v on v.comment_id = c.id
+order by c.created_at desc;
+
+alter view public.user_comments_with_thread set (security_invoker = true);

@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { TiltCard } from '@/components/effects/tilt-card'
 import { useProgress, applyUserProgress } from '@/lib/use-progress'
 import { hasLesson } from '@/lib/lessons'
+import { CommentCountBadge } from '@/components/comment-count-badge'
 import { cn } from '@/lib/utils'
 import type { Chapter } from '@/lib/types'
 
@@ -104,9 +105,12 @@ export function ChapterCard({ chapter: baseChapter }: ChapterCardProps) {
               </Badge>
             )}
           </div>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Clock className="h-3 w-3" />
-            {chapter.duration}
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <CommentCountBadge threadKey={`chapter:${baseChapter.id}`} />
+            <span className="inline-flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {chapter.duration}
+            </span>
           </div>
         </div>
 

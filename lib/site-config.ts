@@ -51,6 +51,7 @@ export const siteConfig = {
     { href: '/', label: '首页' },
     { href: '/product', label: '产品' },
     { href: '/learn', label: '学习路径' },
+    { href: '/community', label: '社区' },
     { href: '/diagnose', label: '诊断' },
     { href: '/assistant', label: 'AI 助手' }
   ],

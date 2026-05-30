@@ -30,6 +30,7 @@ import { ReadingProgress } from '@/components/reading-progress'
 import { ChapterProgressActions } from '@/components/chapter-progress-actions'
 import { Prose } from '@/components/prose'
 import { Mermaid } from '@/components/mermaid'
+import { Discussion } from '@/components/discussion'
 import {
   ExerciseList,
   PitfallList,
@@ -603,6 +604,8 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                 </Link>
               )}
             </div>
+
+            <Discussion threadKey={`chapter:${chapter.id}`} title="本章讨论区" />
           </article>
 
           <aside className="hidden lg:block">

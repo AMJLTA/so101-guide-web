@@ -23,6 +23,7 @@ import Link from 'next/link'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { CodeBlock } from '@/components/code-block'
+import { Discussion } from '@/components/discussion'
 import {
   AuroraBackground,
   FloatingOrbs,
@@ -404,6 +405,12 @@ function ErrorDetail({
           </CardContent>
         </Card>
       )}
+
+      <Discussion
+        threadKey={`error:${entry.key}`}
+        title="这个报错的讨论"
+        className="mt-8"
+      />
     </div>
   )
 }

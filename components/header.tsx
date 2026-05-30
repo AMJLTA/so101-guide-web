@@ -7,6 +7,7 @@ import { Menu, Search, X, ChevronRight, Github, Languages } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { AuthButton } from '@/components/auth-button'
 import { cn } from '@/lib/utils'
 import { siteConfig } from '@/lib/site-config'
 import { siteConfigJa } from '@/lib/site-config-ja'
@@ -176,6 +177,7 @@ export function Header() {
             </a>
           </Button>
           <ThemeToggle />
+          <AuthButton />
           <Button asChild size="sm" className="glow-primary hidden lg:inline-flex">
             <Link href={learnHref}>
               {labels.ctaStart}
